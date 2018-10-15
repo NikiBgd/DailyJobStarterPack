@@ -1,0 +1,2 @@
+# DailyJobStarterPack
+Project for faks
