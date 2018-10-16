@@ -1,0 +1,6 @@
+C:\Users\nikol\source\repos\DailyJobStarterPack\DataBaseCommunication\bin\Release\DataBaseCommunication.dll
+C:\Users\nikol\source\repos\DailyJobStarterPack\DataBaseCommunication\bin\Release\DataBaseCommunication.pdb
+C:\Users\nikol\source\repos\DailyJobStarterPack\DataBaseCommunication\obj\Release\DataBaseCommunication.csprojResolveAssemblyReference.cache
+C:\Users\nikol\source\repos\DailyJobStarterPack\DataBaseCommunication\obj\Release\DataBaseCommunication.csproj.CoreCompileInputs.cache
+C:\Users\nikol\source\repos\DailyJobStarterPack\DataBaseCommunication\obj\Release\DataBaseCommunication.dll
+C:\Users\nikol\source\repos\DailyJobStarterPack\DataBaseCommunication\obj\Release\DataBaseCommunication.pdb
