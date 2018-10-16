@@ -1,0 +1,249 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DataBaseCommunication.Mappers.Response.Clients
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@model  AllClientsResponse
+
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-9">
+        <a class="btn btn-info btn-xs" id="popup-button-new" href="@Url.Action("AddNewClient", "Clients")">
+            <span class="glyphicon glyphicon-plus"></span> Dodaj novog klijenta
+        </a>
+        <a class="btn btn-info btn-xs" id="popup-button" href="#">
+            <span class="glyphicon glyphicon-filter"></span> Pretrazi klijente
+        </a>
+    </div>
+    <div class="col-md-1">
+        <a class="btn btn-default btn-xs" id="pdf-button" href="#">
+            <span class="glyphicon glyphicon-floppy-open"></span> Izvezi u PDF
+        </a>
+    </div>
+    <div class="col-md-2">
+        <a class="btn btn-default btn-xs" id="excell-button" href="#">
+            <span class="glyphicon glyphicon-floppy-saved"></span> Izvezi u Excell
+        </a>
+    </div>
+</div>
+<div id="popup1" class="overlay" style="display:none;">
+    <br />
+    <div class="popup popup-form">
+        @using (Html.BeginForm("Index", "Clients", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "clientsForm" }))
+            {
+            <input type="text" id="ReportType" name="ReportType" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.ReportType : "")" style="display: none;" />
+                <h2>Pretraga klijenata</h2>
+                <a class="close" href="javascript: hidePopUp()">&times;</a>
+                <div class="content">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="Name">Ime</label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="Name" name="Name" type="text" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.Name : "")">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="Address">Adresa</label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="Address" name="Address" type="text" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.Address : "")">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="Place">Mesto</label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="Place" name="Place" type="text" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.Place : "")">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="Municipality">Opstina</label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="Municipality" name="Municipality" type="text" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.Municipality : "")">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="PIB">PIB</label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="PIB" name="PIB" type="text" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.PIB : "")">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="LegalID">Maticni broj</label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="LegalID" name="LegalID" type="text" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.LegalID : "")">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="CreationDate">Datum osnivanja</label>
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="CreationDate" name="CreationDate" type="text" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null && Model.ClientsSearchCriteria.CreationDate != null && Model.ClientsSearchCriteria.CreationDate != DateTime.MinValue ? Model.ClientsSearchCriteria.CreationDate.ToString() : "")">
+                                    <script>
+                                        $(function () {
+                                            $("#CreationDate").datepicker();
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="input-group">
+                                    <select id="CreationDateCompariosonMode" name="CreationDateCompariosonMode" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.CreationDateCompariosonMode : "")">
+                                        <option value=">">></option>
+                                        <option value=">=">>=</option>
+                                        <option value="<"><</option>
+                                        <option value="<"><</option>
+                                        <option value="<"><=</option>
+                                        <option value="=">=</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="Activity">Opis delatnosti</label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="Activity" name="Activity" type="text" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.Activity : "")">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="ActivityCode">Sifra delatnosti</label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="ActivityCode" name="ActivityCode" type="text" class="form-control input-md" value="@(Model.ClientsSearchCriteria != null ? Model.ClientsSearchCriteria.ActivityCode : "")">
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <a href="javascript: hidePopUp()" data-dismiss="modal" class="btn secondary">Odustani</a>
+                    <a href="javascript: submitForm('clientsForm')" data-dismiss="modal" class="btn secondary">U redu</a>
+                </div>
+        }
+    </div>
+</div>
+<div class="row" style="margin-bottom: 50px; margin-top: 20px;">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table id="mytable" class="table table-bordred table-striped" style="border: 1px solid black;">
+                <tr>
+                    <th>Naziv klijenta</th>
+                    <th>Ime kontakt osobe</th>
+                    <th>Telefon</th>
+                    <th>Mail</th>
+                    <th>Zadaci</th>
+                </tr>
+                <tbody>
+                    @foreach (var client in Model.Clients)
+                    {
+                        <tr>
+                            <td><a href=" @Url.Action("Details", "Clients", new { clientId = client.CustomerID })">@client.Name</a></td>
+                            <td>@client.ResponsiblePerson</td>
+                            <td>@client.ResponsiblePersonPhone</td>
+                            <td>@client.ResponsiblePersonMail</td>
+                            <td style="text-align:center">
+                                @if (SessionData.Tasks.Any(x => x.ClientId == client.CustomerID))
+                                {
+                                    <a class="btn btn-xs" style="color: darkred" href="@Url.Action("ActiveTasks", "Tasks", new { clientId = client.CustomerID })">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-xs" href="#" style="color: forestgreen;">
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#popup-button").on("click", function () {
+            $("#popup1").css("display", "block");
+        });
+
+        $("#pdf-button").on("click", function () {
+            $("#ReportType").val("PDF");
+            submitForm('clientsForm');
+            $("#ReportType").val("");
+        });
+
+        $("#excell-button").on("click", function () {
+            $("#ReportType").val("EXCELL");
+            submitForm('clientsForm');
+            $("#ReportType").val("");
+        });
+    });
+
+    function submitForm(formId) {
+        $("#" + formId).submit();
+    }
+
+    function hidePopUp() {
+        $("#popup1").css("display", "none");
+    }
+</script>

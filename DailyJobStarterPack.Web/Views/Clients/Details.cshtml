@@ -1,0 +1,749 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DataBaseCommunication.Mappers.Response.Clients
+@using System.Web.Script.Serialization;
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@model  ClientProfile
+
+
+<!--Last Changes-->
+@{
+    var employmentNumberLastChanges = ViewData["LastChanges"] as List<DataBaseChange>;
+
+    var hasSecondCircle = false;
+    var hasThirdCircle = false;
+    var lastChange = new Change();
+    var changeBeforeLast = new Change();
+
+    if (employmentNumberLastChanges != null)
+    {
+        lastChange = employmentNumberLastChanges.ElementAtOrDefault(0);
+        changeBeforeLast = employmentNumberLastChanges.ElementAtOrDefault(1);
+
+        hasSecondCircle = (lastChange != null);
+        hasThirdCircle = (changeBeforeLast != null);
+    }
+
+
+}
+
+<!--POP UPS-->
+<div id="modal-from-dom-delete" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Brisanje klijenta</h3>
+        </div>
+        <div class="modal-body">
+            <p>Da li ste sigurni da zelite da obrisete korisnika?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="" class="btn danger-delete" data-id="@Model.CustomerID">Da</a>
+            <a href="#" data-dismiss="modal" class="btn-secondary">Ne</a>
+        </div>
+    </div>
+</div>
+<div id="modal-from-dom-activate" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Aktivacija klijenta</h3>
+        </div>
+        <div class="modal-body">
+            <p>Da li ste sigurni da zelite da aktivirate klijenta?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="" class="btn danger-activate" data-id="@Model.CustomerID">Da</a>
+            <a href="#" data-dismiss="modal" class="btn-secondary">Ne</a>
+        </div>
+    </div>
+</div>
+
+
+<div id="modal-from-dom" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Knjizenje vremena</h3>
+        </div>
+        <div class="modal-body" style="margin-bottom: 20px;">
+            <p>Unesite broj sati koji zelite da proknjizite na ovog klijenta</p>
+            <div class="form-group">
+                <div class="col-md-8"></div>
+                <div class="col-md-4">
+                    <input type="number" class="form-control" id="timeNumber">
+                </div>
+            </div>
+            <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                <div class="errorMessage"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="javascript:SendTime();" class="btn danger">U redu</a>
+        </div>
+    </div>
+</div>
+<div id="modal-from-dom-documents" class="modal hide overlay">
+    <div class="popup">
+        @using (Html.BeginForm("PrintDocuments", "Clients", FormMethod.Post, new { @class = "form-horizontal", id = "print-form", role = "form" }))
+        {
+            <input type="text" name="clientId" value="@Model.CustomerID" style="display:none" />
+            <div class="modal-header">
+                <a href="#" data-dismiss="modal" class="close">&times;</a>
+                <h3>Stampa obrazaca</h3>
+            </div>
+            <div class="modal-body" style="margin-bottom: 20px;">
+                <p>Odaberite dokumenta i format dokumenata za stampu</p>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="radio">
+                            <label><input type="radio" name="documents" value="OV_SK">Ovlascenje - sinhronizacija kartice</label>
+                        </div>
+                        <div class="radio">
+                            <label><input type="radio" name="documents" value="I_KA">Izijava o kasnjenju</label>
+                        </div>
+                        <div class="radio">
+                            <label><input type="radio" name="documents" value="O_ZP">Ovlascenje - zdravstvena potvrda</label>
+                        </div>
+                        <div class="radio">
+                            <label><input type="radio" name="documents" value="O_PO">Ovlascenje - prijva i odjava</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessagePrintName"></div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="radio-inline"><input type="radio" name="reportType" value="PDF">PDF</label>
+                        <label class="radio-inline"><input type="radio" name="reportType" value="EXCELL">Excell</label>
+                        <label class="radio-inline"><input type="radio" name="reportType" value="WORD">Word</label>
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessagePrintType"></div>
+                </div>
+
+            </div>
+            <div style="border-bottom: 1px solid #e5e5e5;text-align:right; ">
+                <button type="submit" class="btn danger">U redu</button>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="modal-from-dom-workers" class="modal hide overlay">
+    <div class="popup">
+        @using (Html.BeginForm("PrintWorkersOrder", "Clients", FormMethod.Post, new { @class = "form-horizontal", id = "workers-form", role = "form" }))
+        {
+            <input type="text" name="clientId" value="@Model.CustomerID" style="display:none" />
+            <div class="modal-header">
+                <a href="#" data-dismiss="modal" class="close">&times;</a>
+                <h3>Stampa radnog naloga</h3>
+            </div>
+            <div class="modal-body" style="margin-bottom: 20px;">
+                <p>Odaberite kurira</p>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @foreach (var c in SessionData.Courires)
+                        {
+                            <div class="radio">
+                                <label><input type="radio" name="courierId" value="@c.CourierId">@c.FirstName @c.LastName</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessageCourier"></div>
+                </div>
+
+                <p>Unesite mesto odlaska</p>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <input type="text" name="Place" id="Place" />
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessagePlace"></div>
+                </div>
+
+                <p>Unesite opis posla</p>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <textarea type="text" name="JobDescription" id="JobDescription"></textarea>
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessageJobDescription"></div>
+                </div>
+
+                <p>Unesite potrebnu dokumentciju razdvojeno zarezom</p>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <input type="text" name="Documentation" id="Documentation" />
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessageDocumentation"></div>
+                </div>
+
+            </div>
+            <div style="border-bottom: 1px solid #e5e5e5;text-align:right; ">
+                <button type="submit" class="btn danger">U redu</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function ShowPopUp() {
+        $('#modal-from-dom').modal({
+            backdrop: 'static',
+            keyboard: true,
+            show: true
+        });
+    }
+
+    function SendTime() {
+        $('.errorMessage').html('');
+        var time = $("#timeNumber").val();
+        if (time == "") {
+            $('.errorMessage').html('<p style="color: red;">Morate uneti utorseno vreme!</p>');
+            return;
+        }
+
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("LogTime", "Clients")",
+           data: 'clientId=@(Model.CustomerID)&time=' + time,
+           dataType: "json",
+           success: function (result) {
+               if (result.isSuccessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste prokljizili vreme na ovog klijenta.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function (response) {
+               debugger;
+               $('.modal-body').html('<p>Doslo je do greske prilkom knjizenja vremena.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+
+    function ShowPopUpForDocuments() {
+        $('#modal-from-dom-documents').modal({
+            backdrop: 'static',
+            keyboard: true,
+            show: true
+        });
+    }
+
+    $("#print-form").submit(function (e) {
+        $('.errorMessagePrintName').html('');
+        $('.errorMessagePrintType').html('');
+
+        var reportType = $("input[name='reportType']:checked").val();
+
+        if (reportType == undefined || reportType == "") {
+            $('.errorMessagePrintType').html('<p style="color: red;">Morate odabrati tip dokumenta!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+
+        var documentsForPrint = new Array();
+        $.each($("input[name='documents']:checked"), function () {
+            documentsForPrint.push($(this).val());
+        });
+
+        if (documentsForPrint.length == 0) {
+            $('.errorMessagePrintName').html('<p style="color: red;">Morate odabrati barem jedan dokument!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+
+    });
+
+
+    function ShowPopUpForWorkers() {
+        $('#modal-from-dom-workers').modal({
+            backdrop: 'static',
+            keyboard: true,
+            show: true
+        });
+    }
+
+    $("#workers-form").submit(function (e) {
+        $('.errorMessageCourier').html('');
+        $('.errorMessagePlace').html('');
+        $('.errorMessageJobDescription').html('');
+        $('.errorMessageDocumentation').html('');
+
+        var courierId = $("input[name='courierId']:checked").val();
+
+        if (courierId == undefined || courierId == "") {
+            $('.errorMessageCourier').html('<p style="color: red;">Morate odabrati kurira!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+
+        if ($("#Place").val() == "") {
+            $('.errorMessagePlace').html('<p style="color: red;">Morate odabrati mesto odlaska!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+
+        if ($("#JobDescription").val() == "") {
+            $('.errorMessageJobDescription').html('<p style="color: red;">Morate odabrati opis posla!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+
+        if ($("#Documentation").val() == "") {
+            $('.errorMessageDocumentation').html('<p style="color: red;">Morate odabrati dokumentaciju!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+
+    });
+</script>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10" style="margin-top: 50px;">
+        <div class="panel panel-default">
+            <div class="panel-heading" style="height:50px;">
+                <h4>
+                    <div class="col-md-10">
+                        @Model.Name
+                    </div>
+                    <div class="col-md-2">
+                        @if (Model.Status == 1)
+                        {                        
+                            <a href="#" class="confirm-delete" style="margin-left: -5px" data-id="@Model.CustomerID">Obrisi klijenta</a>
+                        }
+                        else if (Model.Status == 0)
+                        {
+                            <a href="#" class="confirm-activate" style="margin-left: -5px" data-id="@Model.CustomerID">Aktiviraj klijenta</a>
+                        }
+                    </div>
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="box box-info">
+                    <div class="box-body">
+                        <div class="col-sm-4">
+                            @if (hasThirdCircle)
+                            {
+                                <div class="col-sm-2" style="margin-top:-30px;">
+                                    <div align="center">
+                                        <div class="counter counter-smaller" data-count="@changeBeforeLast.OldValue">0</div>
+                                    </div>
+                                </div>
+                            }
+                            @if (hasSecondCircle)
+                            {
+                                <div class="col-sm-3" style="margin-top:-5px;">
+                                    <div align="center">
+                                        <div class="counter counter-small" data-count="@lastChange.OldValue">0</div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-sm-7">
+                                <div align="center">
+                                    <div class="counter counter-big" data-count="@Model.EmployeesNumber">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <h4 style="color:#00b1b1;">@Model.Address, @Model.Municipality, @Model.Place</h4>
+                            <p>@Model.Form @Model.FormSubType</p>
+                            @if (SessionData.User.Role != Role.Worker)
+                            {
+                                <p>@Model.Amount @Model.AmountCode</p>
+                                <p>Iznos u lokalnoj valuti: @Model.LocalAmount.ToString("0.##") RSD</p>
+                            }
+                            <p><a href="@Url.Action("AllTimes", "Clients", new { clientId = Model.CustomerID})">Vreme knjizeno na klijenta</a>: @Model.TotalTime h</p>
+                            <p><a href="@Url.Action("AllWorkerOrders", "Clients", new { clientId = Model.CustomerID})">Broj poseta kurira</a>: @Model.TotaCourierVisits</p>
+                            <p>Broj mailova: @Model.TotalMailNumber</p>
+                            <p>Broj minuta razgovora: @Model.TotalMinutesNumber</p>
+                        </div>
+                        <div class="clearfix"></div>
+                        <hr style="margin:5px 0 5px 0;">
+
+
+                        <div class="col-sm-5 col-xs-6 tital ">PIB:</div><div class="col-sm-7 col-xs-6 ">@Model.PIB</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Maticni broj:</div><div class="col-sm-7"> @Model.LegalID</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Datum osnivanja:</div><div class="col-sm-7">@Model.CreationDate</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Delatnost:</div><div class="col-sm-7">@Model.ActivityCode - @Model.Activity</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Odgovrono lice:</div><div class="col-sm-7">@Model.ResponsiblePerson</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Email dogovornog lica:</div><div class="col-sm-7">@Model.ResponsiblePersonMail</div>
+                        <div class="clearfix"></div>
+                        @{
+                            var additionalMails = Model.AdditionalMails.Split(',');
+                            var displayMails = "";
+                            foreach (var mail in additionalMails)
+                            {
+                                displayMails += mail + "<br>";
+                            }
+                        }
+                        <div class="col-sm-5 col-xs-6 tital ">Dodatni mailovi:</div><div class="col-sm-7">@Html.Raw(displayMails)</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Telefon dogovornog lica:</div><div class="col-sm-7">@Model.ResponsiblePersonPhone</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Rodjendan dogovornog lica:</div><div class="col-sm-7">@Model.ResponsiblePersonBirthDate</div>
+                        <div class="clearfix"></div>
+
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Direktor:</div><div class="col-sm-7">@Model.Director</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        @{
+                            var accounts = Model.Account.Split(',');
+                            var display = "";
+                            foreach (var acc in accounts)
+                            {
+                                display += acc + "<br>";
+                            }
+                        }
+                        <div class="col-sm-5 col-xs-6 tital ">Racun(i):</div><div class="col-sm-7">@Html.Raw(display)</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Slava:</div><div class="col-sm-7">@Model.Slava</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Rodjendan:</div><div class="col-sm-7">@Model.BirthDate</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Obracun PDV-a:</div><div class="col-sm-7">@Model.PDV</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Datum pocetka saradnje:</div><div class="col-sm-7">@Model.StartDate</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Metoda dostave:</div><div class="col-sm-7">@Model.DeliveryMethod</div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Dan u nedelji za kurire:</div><div class="col-sm-7">
+                            @if (Model.CourierDay == 1)
+                            {
+                                <span>Ponedeljak</span>
+                            }
+                            else if (Model.CourierDay == 2)
+                            {
+                                <span>Utorak</span>
+                            }
+                            else if (Model.CourierDay == 3)
+                            {
+                                <span>Sreda</span>
+                            }
+                            else if (Model.CourierDay == 4)
+                            {
+                                <span>Cetvrtak</span>
+                            }
+                            else if (Model.CourierDay == 5)
+                            {
+                                <span>Petak</span>
+                            }
+                            else if (Model.CourierDay == 6)
+                            {
+                                <span>Subota</span>
+                            }
+                            else if (Model.CourierDay == 7)
+                            {
+                                <span>Nedelja</span>
+                            }
+
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="bot-border"></div>
+                        <div class="col-sm-5 col-xs-6 tital ">Moja odgovornost za klijenta:</div><div class="col-sm-7">
+                            @if (SessionData.User.Role == Role.Admin)
+                            {
+                                <span>Administrator</span>
+                            }
+                            else
+                            {
+                                if (Model.MainUserId == SessionData.User.Id)
+                                {
+                                    <span>Knjigovodja</span>
+                                }
+                                else if (Model.SecondUserId == SessionData.User.Id)
+                                {
+                                    <span>Obracunski radnik</span>
+                                }
+                                else
+                                {
+                                    <span>Neutvrdjeno</span>
+                                }
+                            }
+                        </div>
+                        @if (SessionData.User.Role == Role.Admin)
+                        {
+                            <div class="col-sm-5 col-xs-6 tital ">Tim kojem pripada klijent:</div><div class="col-sm-7">
+                                @{
+                                    var user = SessionData.Users.FirstOrDefault(x => x.Id == Model.MainUserId);
+                                }
+
+                                @if (user != null)
+                                {
+                                    <span>@user.Team.TeamName</span>
+                                }
+                            </div>
+                            <div class="clearfix"></div>
+                                <div class="bot-border"></div>
+                                    }
+                        <div class="clearfix"></div>
+                        <hr style="margin:15px 0 5px 0;">
+                        <div class="row" style="margin:15px 0 5px 0;">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-2">
+                                <a href="@Url.Action("ClientServices", "Clients", new { clientId = Model.CustomerID})" class="btn btn-primary  btn-block">Pruzene usluge</a>
+                            </div><!-- /col -->
+                            <div class="col-md-2">
+                                <button onclick="ShowPopUpForWorkers()" class="btn btn-primary  btn-block">Kreiraj radni nalog</button>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="@Url.Action("ChangeData", "Clients", new { clientId = Model.CustomerID})" class="btn btn-primary  btn-block">Izmeni podatke</a>
+                            </div><!-- /col -->
+                            <div class="col-md-2">
+                                <button onclick="ShowPopUp()" class="btn btn-primary  btn-block">Proknjizi vreme</button>
+                            </div><!-- /col -->
+                            <div class="col-md-2">
+                                <button onclick="ShowPopUpForDocuments()" class="btn btn-primary  btn-block">Kreiraj obrazac</button>
+                            </div><!-- /col -->
+                        </div><!-- /row -->
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10" style="margin-top: 50px;">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Izvestaji</h4></div>
+            <div class="panel-body">
+                <div class="box box-info">
+                    <div class="box-body">
+                        <div id="reportsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10" style="margin-top: 50px;">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Poslednje promene</h4></div>
+            <div class="panel-body">
+                <div class="box box-info">
+                    <div class="box-body">
+                        <div id="changesList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .counter-big {
+        display: table-cell;
+        margin: 1.5%;
+        font-size: 25px;
+        background-color: #FF6F6F;
+        width: 150px;
+        border-radius: 50%;
+        height: 150px;
+        vertical-align: middle;
+        color: #fff;
+    }
+
+    .counter-small {
+        display: table-cell;
+        margin: 1.5%;
+        font-size: 25px;
+        background-color: orangered;
+        width: 150px;
+        border-radius: 50%;
+        height: 100px;
+        vertical-align: middle;
+        color: #fff;
+    }
+
+
+    .counter-smaller {
+        display: table-cell;
+        margin: 1.5%;
+        font-size: 22px;
+        background-color: indianred;
+        width: 100px;
+        border-radius: 50%;
+        height: 100px;
+        vertical-align: middle;
+        color: #fff;
+        margin-right: -50px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('.counter').each(function () {
+            var $this = $(this),
+                countTo = $this.attr('data-count');
+
+            $({ countNum: $this.text() }).animate({
+                countNum: countTo
+            },
+
+                {
+
+                    duration: 1500,
+                    easing: 'linear',
+                    step: function () {
+                        $this.html(Math.floor(this.countNum) + "<br>" + "<span class='word'>Zaposlenih</span>");
+                        $('.counter-smaller').find('.word').html('         Zaposlenih       ');
+
+                    },
+                    complete: function () {
+                        $this.html(this.countNum + "<br>" + "<span class='word'>Zaposlenih</span>");
+                        $('.counter-smaller').find('.word').html('        Zaposlenih      ');
+
+                    }
+
+                });
+        });
+    });
+    $(document).ready(function () {
+        doGet('changesList', '@Url.Action("GetLastChanges", "Clients", new { clientId = Model.CustomerID})');
+        doGet('reportsList', '@Url.Action("GetReports", "Clients", new { clientId = Model.CustomerID})');
+
+        function doGet(partId, urlPath) {
+            $.ajax({
+                type: "get",
+                cache: false,
+                url: urlPath,
+                success: function (data) {
+                    $("#" + partId).html(data);
+                },
+                error: function (data) {
+
+                }
+            });
+        }
+    });
+
+    $('#modal-from-dom-delete').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('.danger-delete');
+
+        removeBtn.attr('href', 'javascript: DeleteClient(' + id + ')');
+    });
+
+    $('.confirm-delete').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#modal-from-dom-delete').data('id', id).modal('show').trigger('show');
+    });
+
+
+    function DeleteClient(id) {
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("DeleteClient", "Clients")",
+           data: { 'clientId': id},
+           dataType: "json",
+           success: function (result) {
+               if (result.isSuccessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste obrisali klijenta iz sistema.</p>')
+                   $('.modal-footer').html('<a href="@Url.Action("Index", "Clients")" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="@Url.Action("Index", "Clients")" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom brisanja klijenta iz sistema.</p>')
+               $('.modal-footer').html('<a href="@Url.Action("Index", "Clients")" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+
+
+    $('#modal-from-dom-activate').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('.danger-activate');
+
+        removeBtn.attr('href', 'javascript: ActivateClient(' + id + ')');
+    });
+
+    $('.confirm-activate').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#modal-from-dom-activate').data('id', id).modal('show').trigger('show');
+    });
+
+        function ActivateClient(id) {
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("ActivateClient", "Clients")",
+           data: { 'clientId': id},
+           dataType: "json",
+           success: function (result) {
+               if (result.isSuccessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste ponovo aktivirali klijenta u sistem.</p>')
+                   $('.modal-footer').html('<a href="@Url.Action("Index", "Clients")" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="@Url.Action("Index", "Clients")" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom aktiviranja klijenta u sistem.</p>')
+               $('.modal-footer').html('<a href="@Url.Action("Index", "Clients")" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+</script>
+<style>
+    button {
+        border: 1px #AAA solid;
+        padding: 4px 10px;
+    }
+
+    .hide {
+        display: none;
+    }
+</style>

@@ -1,0 +1,138 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security;
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-12">
+        <a class="btn btn-success btn-xs" id="popup-button" href="@Url.Action("CreateNewOffer", "Offer")">
+            <span class="glyphicon glyphicon-plus"></span> Unseite novi upit
+        </a>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 10px;">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>
+                    <div class="col-md-11">
+                        Aktivni upiti
+                    </div>
+                    <div class="col-md-1 task-number task-number-active">
+                        <span style="margin-left: -5px">@SessionData.Offers.Count</span>
+                    </div>
+                </h4>
+                <div class="row">
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="mytable" class="table table-bordred table-striped" style="border: 1px solid black;">
+                        <tr>
+                            <th>Ime kontakt osobe</th>
+                            <th>Naziv</th>
+                            <th>PIB</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Usluga</th>
+                            <th>Kako je cuo?</th>
+                            <th>Utisak</th>
+                            <th>Povratni info</th>
+                            <th>Cena</th>
+                            <th>Osnovan kod nas?</th>
+                            <th>Tip kompanije</th>
+                            <th>Zakup?</th>
+                            <th>Datum - Napomena</th>
+                        </tr>
+                        <tbody>
+                            @foreach (var offer in SessionData.Offers.OrderByDescending(x => x.CreationDate))
+                            {
+                                var serviceNames = "";
+                                offer.Services.ForEach(x => serviceNames += x.ServiceName + "<br>");
+                                <tr>
+                                    <td>@offer.ContactPerson</td>
+                                    <td>@offer.Name</td>
+                                    <td>@offer.PIB</td>
+                                    <td>@offer.Mail</td>
+                                    <td>@offer.PhoneNumber</td>
+                                    <td>@Html.Raw(serviceNames)</td>
+                                    <td>@offer.HeardFrom</td>
+                                    <td>@offer.Impression</td>
+                                    <td>@offer.BackInfo</td>
+                                    <td>@offer.Amount @offer.AmountCurrency</td>
+                                    <td>@(offer.IsOurCreation ? "DA" : "NE")
+                                    <td>@offer.CompanyType @(offer.CompanyType == "Preduzetnik" ? offer.CompanySubType : "")</td>
+                                    <td>@(offer.MakeRent ? "DA" : "NE")
+                                    <td>@offer.CreationDate - @offer.Note</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--POP UPS-->
+<div id="send-mail" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Slanje maila</h3>
+        </div>
+        <div class="modal-body">
+            <p>Nakon sto jednom posaljete mail, ne mozete obustaviti ovu akciju</p>
+            <p>Da li ste sigurni da zelite da nastavite?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="" class="btn danger" id="send-mail-confirm">Da</a>
+            <a href="#" data-dismiss="modal" class="btn secondary">Ne</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#send-mail').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('#send-mail-confirm');
+
+        removeBtn.attr('href', 'javascript: SendMail(' + id + ')');
+    });
+
+    $('.show-send-mail').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#send-mail').data('id', id).modal('show').trigger('show');
+    });
+
+    function SendMail(id) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("SendMail", "Creations")",
+           data: { 'creationId': id},
+           dataType: "json",
+           success: function (result) {
+               debugger;
+
+               if (result.IsSucessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste poslali mail.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom slanja mail-a.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+
+</script>

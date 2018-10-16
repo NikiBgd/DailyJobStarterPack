@@ -1,0 +1,322 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@{
+    var shouldOpenPop = ViewData.ContainsKey("isSuccessful");
+    var isSuccessful = false;
+    if (shouldOpenPop)
+    {
+        isSuccessful = (bool)ViewData["isSuccessful"];
+    }
+}
+<style>
+
+
+</style>
+<div class="row" style="margin-bottom: 50px; margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Nova ponuda</h4>
+                <div class="row">
+                </div>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("CreateNewOffer", "Offer", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="ContactPerson">Kontakt osoba</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="ContactPerson" name="ContactPerson" type="text" class="form-control input-md" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Name">Naziv</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="Name" name="Name" type="text" class="form-control input-md">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="PIB">PIB</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="PIB" name="PIB" type="text" class="form-control input-md"  >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="PhoneNumber">Telefon</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="PhoneNumber" name="PhoneNumber" type="text" class="form-control input-md"  >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Mail">Mail</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="Mail" name="Mail" type="text" class="form-control input-md"  >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="ServiceId">Opis posla</label>
+                            <div class="col-md-4">
+                                @foreach (var service in SessionData.Services.Where(x => x.Type == 1 || x.Type == 3))
+                                {
+                                    int i = 0;
+                                    i = i + 1;
+                                    <div class="checkbox">
+                                        <label for="JobType-@service.ServiceId"><input type="checkbox" class="price-checkbox" data-price="@service.Price" name="JobType" id="JobType-@service.ServiceId" value="@service.ServiceId" @(i == 1 ? "checked" : "")>@service.ServiceName</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="MakeRent">Da li se radi zakup</label>
+                            <div class="col-md-4">
+                                <label class="radio-inline" for="MakeRent-0">
+                                    <input type="radio" name="MakeRent" id="MakeRent-0" value="false">
+                                    NE
+                                </label>
+                                <label class="radio-inline" for="MakeRent-1">
+                                    <input type="radio" name="MakeRent" id="MakeRent-1" value="true">
+                                    DA
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="HeardFrom">Kako je cuo?</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="HeardFrom" name="HeardFrom" type="text" class="form-control input-md"  >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Impression">Utisak</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="Impression" name="Impression" type="text" class="form-control input-md"  >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="BackInfo">Povratna informacija</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="BackInfo" name="BackInfo" type="text" class="form-control input-md"  >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Amount">Cena</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="Amount" name="Amount" type="text" class="form-control input-md"  >
+                                    <input id="AmountCurrency" name="AmountCurrency" type="text" class="form-control input-md"  >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="IsOurCreation">Osnovan kod nas?</label>
+                            <div class="col-md-4">
+                                <label class="radio" for="IsOurCreation-1">
+                                    <input type="radio" name="IsOurCreation" id="IsOurCreation-1" value="true" checked>
+                                    DA
+                                </label>
+                                <label class="radio" for="IsOurCreation-2">
+                                    <input type="radio" name="IsOurCreation" id="IsOurCreation-2" value="false">
+                                    NE
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="CompanyType">Oblik</label>
+                            <div class="col-md-4">
+                                <label class="radio-inline" for="CompanyType-0">
+                                    <input type="radio" name="CompanyType" id="CompanyType-0" value="DOO">
+                                    DOO
+                                </label>
+                                <label class="radio-inline" for="CompanyType-1">
+                                    <input type="radio" name="CompanyType" id="CompanyType-1" value="Preduzetnik">
+                                    Preduzetnik
+                                </label>
+                                <label class="radio-inline" for="CompanyType-2">
+                                    <input type="radio" name="CompanyType" id="CompanyType-2" value="Udruzenje">
+                                    Udruzenje
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group" id="subTypeChooser">
+                            <label class="col-md-4 control-label" for="CompanySubType">Podoblik</label>
+                            <div class="col-md-4">
+                                <label class="radio-inline" for="CompanySubType-0">
+                                    <input type="radio" name="CompanySubType" id="CompanySubType-0" value="Licna zarada" checked>
+                                    Licna zarada
+                                </label>
+                                <label class="radio-inline" for="CompanySubType-1">
+                                    <input type="radio" name="CompanySubType" id="CompanySubType-1" value="Samooporezivanje">
+                                    Samoooprezivanje
+                                </label>
+                                <label class="radio-inline" for="CompanySubType-2">
+                                    <input type="radio" name="CompanySubType" id="CompanySubType-2" value="Pausal">
+                                    Pausal
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Note">Napomena</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="Note" name="Note" type="text" class="form-control input-md"  >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="UserId">Za korisnika</label>
+                            <div class="col-md-4">
+                                @foreach (var user in SessionData.Users)
+                                {
+                                    <label class="radio" for="UserId-@user.Id">
+                                        <input type="radio" name="UserId" id="UserId-@user.Id" value="@user.Id" @(user.Id == SessionData.User.Id ? "checked" : "")>
+                                        @user.FirstName @user.LastName
+                                    </label>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label"></label>
+                            <div class="col-md-4" style="text-align: right">
+                                <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up"></span> Dodaj potencijalno osnivanje</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- POP UPUS -->
+@if (shouldOpenPop)
+{
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h2>Dodavanje novog upita</h2>
+            <a class="close" href="@Url.Action("Index", "Offer")">&times;</a>
+            <div class="content">
+                @if (isSuccessful)
+                {
+                    <span>Uspesno ste dodali novi upit. Sva upite mozete videti u listi upita.</span>
+                }
+                else
+                {
+                    <span>Doslo je do greske prilikom dodavanja novog upita.</span>
+                }
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("Index", "Offer")" data-dismiss="modal" class="btn secondary">U redu</a>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $("#subTypeChooser").hide();
+        SetPrice();
+        $(".price-checkbox").change(function () {
+            SetPrice();
+        });
+
+        $('input[type=radio][name=CompanyType]').change(function () {
+            if (this.value == 'Preduzetnik') {
+                $("#subTypeChooser").fadeIn();
+            }
+            else {
+                $("#subTypeChooser").fadeOut();
+            }
+        });
+    });
+
+    function SetPrice() {
+        var totalPrice = 0;
+        $(".price-checkbox").each(function (i, obj) {
+            if ($(obj).is(':checked')) {
+                var price = parseInt($(obj).data("price"));
+                totalPrice += price;
+            }
+        });
+
+        $("#Amount").val(totalPrice);
+        $("#AmountCurrency").val("RSD");
+    }
+
+</script>

@@ -1,0 +1,262 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-11">
+        <a class="btn btn-success btn-xs" id="popup-button" href="@Url.Action("CreateNewService", "Settings")">
+            <span class="glyphicon glyphicon-plus"></span> Unseite novu uslugu
+        </a>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 10px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-10 ">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Pregled trenutnih usluga</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-filter">
+                    <thead>
+                        <tr>
+                            <td>
+                                Naziv usluge
+                            </td>
+                            <td>
+                                Opis usluge
+                            </td>
+                            <td>
+                                Cena usluge
+                            </td>
+                            <td>
+                                Pripadnost
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var service in SessionData.Services)
+                        {
+                            var type = "";
+                            switch (service.Type)
+                            {
+                                case 1:
+                                    type = "Za upite"; break;
+                                case 2:
+                                    type = "Za osnivanje"; break;
+                                case 3:
+                                    type = "Za upite i osnivanje"; break;
+                                default:
+                                    type = "Nepoznato"; break;
+                            }
+                            <tr>
+                                <td>
+                                    @service.ServiceName
+                                </td>
+                                <td>
+                                    @service.ServiceDescription
+                                </td>
+                                <td>
+                                    @service.Price RSD
+                                </td>
+                                <td>
+                                    @type
+                                </td>
+                                <td>
+                                    <a href="javascript: ShowPopUp('@service.ServiceId', '@service.ServiceDescription', '@service.Price', '@service.Type')">Izmeni podesavanja</a>
+                                </td>
+                                <td style="text-align: center;">
+                                    <button class="btn btn-danger btn-xs confirm-delete" data-id="@service.ServiceId">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--POP UPS-->
+<div id="modal-from-dom-settings" class="modal hide overlay">
+    <div class="popup">
+        @using (Html.BeginForm("Services", "Settings", FormMethod.Post, new { @class = "form-horizontal", id = "services-form", role = "form" }))
+        {
+            <input type="text" name="ServiceId" id="ServiceId" style="display:none" />
+            <div class="modal-header">
+                <a href="#" data-dismiss="modal" class="close">&times;</a>
+                <h3>Promena podesavanja</h3>
+            </div>
+            <div class="modal-body" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="ServiceDescription">Opis</label>
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-user">
+                                </i>
+                            </div>
+                            <input id="ServiceDescription" name="ServiceDescription" type="text" class="form-control input-md" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessageServiceDescription"></div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="Price">Cena</label>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-birthday-cake">
+                                </i>
+                            </div>
+                            <input id="Price" name="Price" type="text" class="form-control input-md" required>
+                            <span class="input-group-addon" id="basic-addon2">RSD</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="Type">Vrsta</label>
+                    <div class="col-md-6">
+                        <label class="radio-inline" for="Type-0">
+                            <input type="radio" name="Type" id="Type-0" value="1" checked>
+                            Za upite
+                        </label>
+                        <br>
+                        <label class="radio-inline" for="Type-1">
+                            <input type="radio" name="Type" id="Type-1" value="2">
+                            Za osnivanje
+                        </label>
+                        <br>
+                        <label class="radio-inline" for="Type-2">
+                            <input type="radio" name="Type" id="Type-2" value="3">
+                            Za upite i osnivanje
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessagePrice"></div>
+                </div>
+                <div style="border-bottom: 1px solid #e5e5e5;text-align:right; ">
+                    <button type="submit" class="btn danger">U redu</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    function ShowPopUp(id, currentDesc, currentPrice, currentType) {
+        debugger;
+        $("#ServiceId").val(id);
+        $("#ServiceDescription").val(currentDesc);
+        $("#Price").val(currentPrice);
+        $('[name=Type][value=' + currentType + ']').prop('checked', true);
+
+
+        $('#modal-from-dom-settings').modal({
+            backdrop: 'static',
+            keyboard: true,
+            show: true
+        });
+    }
+
+    $("#services-form").submit(function (e) {
+        $('.errorMessageServiceDescription').html('');
+        $('.errorMessagePrice').html('');
+
+        var desc = $("#ServiceDescription").val();
+        var price = $("#Price").val();
+
+        if (desc == undefined || desc == "") {
+            $('.errorMessageServiceDescription').html('<p style="color: red;">Morate uneti opis!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+
+        if (price == undefined || price == "") {
+            $('.errorMessagePrice').html('<p style="color: red;">Morate uneti iznos!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+    });
+</script>
+
+<!--POP UPS-->
+<div id="modal-from-dom" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Brisanje firme</h3>
+        </div>
+        <div class="modal-body">
+            <p>Trajno cete obrisati ulugu iz sistema.</p>
+            <p>Da li ste sigurni da zelite da nastavite?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="" class="btn danger">Da</a>
+            <a href="#" data-dismiss="modal" class="btn secondary">Ne</a>
+        </div>
+    </div>
+</div>
+<script>
+    $('#modal-from-dom').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('.danger');
+
+        removeBtn.attr('href', 'javascript: DeleteUser(' + id + ')');
+    });
+
+    $('.confirm-delete').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#modal-from-dom').data('id', id).modal('show').trigger('show');
+    });
+
+
+    function DeleteUser(id) {
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("DeleteService", "Settings")",
+           data: { 'serviceId': id},
+           dataType: "json",
+           success: function (result) {
+               debugger;
+
+               if (result.isSuccessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste obrisali uslugu iz sistema.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom brisanja usluge iz sistema.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+</script>
+<style>
+    button {
+        border: 1px #AAA solid;
+        padding: 4px 10px;
+    }
+
+    .hide {
+        display: none;
+    }
+</style>
+

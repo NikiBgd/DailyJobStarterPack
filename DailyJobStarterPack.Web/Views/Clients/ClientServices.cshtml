@@ -1,0 +1,63 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DataBaseCommunication.Mappers.Response.Clients
+@using System.Web.Script.Serialization;
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@model ClientServicesResponse
+
+@{
+    var isSuccessful = ViewData["isSuccessful"] != null ? (bool)ViewData["isSuccessful"] : false;
+}
+
+@if(isSuccessful){
+    <div id="modal-from-dom-services" class="modal hide overlay">
+        <div class="popup">
+            <p>Uspesno ste izmenili usluge korinika</p>
+            <div style="border-bottom: 1px solid #e5e5e5;text-align:right; ">
+                <a href="#" class="btn btn-primary">U redu</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div id="modal-from-dom-services" class="modal hide overlay">
+        <div class="popup">
+            @using (Html.BeginForm("ClientServices", "Clients", FormMethod.Post, new { @class = "form-horizontal", id = "print-form", role = "form" }))
+            {
+                <input type="text" name="ClientId" value="@Model.ClientId" style="display:none" />
+                <div class="modal-header">
+                    <a href="#" data-dismiss="modal" class="close">&times;</a>
+                    <h3>Usluge</h3>
+                </div>
+                        <div class="modal-body" style="margin-bottom: 20px;">
+                            @foreach (var service in SessionData.Services)
+                            {
+                                var userService = false;
+                                if (Model.Services.Any(x => x.ServiceId == service.ServiceId))
+                                {
+                                    userService = true;
+                                }
+                            <div class="checkbox">
+                                <label for="Service-@service.ServiceId">
+                                    <input type="checkbox" class="price-checkbox" name="Service" id="Service-@service.ServiceId" value="@service.ServiceId" @(userService ? "checked" : "")>@service.ServiceName
+                                </label>
+                            </div>
+                            }
+                        </div>
+                        <div style="border-bottom: 1px solid #e5e5e5;text-align:right; ">
+                            <button type="submit" class="btn danger">Izmeni usluge</button>
+                        </div>
+            }
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('#modal-from-dom-services').modal({
+            backdrop: 'static',
+            keyboard: true,
+            show: true
+        });
+    });
+</script>

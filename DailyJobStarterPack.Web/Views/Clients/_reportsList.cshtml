@@ -1,0 +1,38 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+
+@model List<Report>
+
+@{
+    var totalCountHalf = Model.Count / 2;
+}
+
+<p>Korisnik trenutno koristi @Model.Count(x => x.Using) izvestaja</p>
+<div class="row">
+    @using (Html.BeginForm("ChageReports", "Clients", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        <input name="clientId" value="@Request.QueryString["clientId"]" style="display:none" />
+        <div class="col-sm-4">
+            @foreach (var report in Model.Take(totalCountHalf))
+            {
+                <div class="checkbox">
+                    <label><input type="checkbox" name="ReportId" value="@report.ReportId" @(report.Using ? "checked" : "")><a href="@Url.Action("DownloadReport", "Clients", new { reportId = report.ReportId, clientId = Request.QueryString["clientId"] })">@report.ReportName</a></label>
+                </div>
+            }
+        </div>
+        <div class="col-sm-8">
+            @foreach (var report in Model.Skip(totalCountHalf))
+            {
+                <div class="checkbox">
+                    <label><input type="checkbox" name="ReportId" value="@report.ReportId" @(report.Using ? "checked" : "")><a href="@Url.Action("DownloadReport", "Clients", new { reportId = report.ReportId, clientId = Request.QueryString["clientId"] })">@report.ReportName</a></label>
+                </div>
+            }
+        </div>
+
+        <div class="row" style="margin:15px 0 5px 0;">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary  btn-block">Potvrdi promene</button>
+            </div><!-- /col -->
+        </div>
+    }
+</div>

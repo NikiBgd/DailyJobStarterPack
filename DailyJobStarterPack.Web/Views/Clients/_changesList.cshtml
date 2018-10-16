@@ -1,0 +1,45 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+
+@model List<DataBaseChange>
+
+<div class="table-responsive">
+    <table id="mytable" class="table table-bordred table-striped" style="width: 100%;">
+        <tr>
+            <th>
+                Korisnik
+            </th>
+            <th>
+                Datum promene
+            </th>
+            <th>
+                Promenjena vrednost
+            </th>
+            <th>
+                Stara vrednost
+            </th>
+            <th>
+                Nova vrednost
+            </th>
+        </tr>
+        @foreach (var change in Model)
+        {
+            <tr>
+                <td>
+                    @change.User
+                </td>
+                <td>
+                    @change.ChangeDate
+                </td>
+                <td>
+                    @change.FieldName
+                </td>
+                <td>
+                    @change.OldValue
+                </td>
+                <td>
+                    @change.NewValue
+                </td>
+            </tr>
+        }
+    </table>
+</div>

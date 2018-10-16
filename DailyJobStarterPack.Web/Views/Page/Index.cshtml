@@ -1,0 +1,208 @@
+﻿@using DailyJobStarterPack.Web.ViewModels.Security
+
+<div class="row">
+    <div class="col-md-7" style="margin-top: 50px;">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>
+                    <div class="col-md-11">
+                        @SessionData.User.FirstName @SessionData.User.LastName
+                    </div>
+                    <div class="col-md-1 task-number task-number-active">
+                        <span style="margin-left: -5px">@SessionData.Tasks.Count(x => !x.IsDone)</span>
+                    </div>
+                </h4>
+                <div class="row">
+                </div>
+            </div>
+            <div class="panel-body">
+                <p>Vasi zadaci za danas su:</p>
+                <table class="table table-filter">
+                    <tbody>
+                        @foreach (var task in SessionData.Tasks)
+                        {
+                            <tr>
+                                <td style="padding-top: 20px">
+                                    @if (task.IsDone)
+                                    {
+                                        <i class="fa fa-check" style="font-size:40px;color:green"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa fa-close" style="font-size:40px;color:red"></i>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="media">
+                                        <div class="media-body">
+                                            <span class="media-meta pull-right">@task.TaskDate</span>
+                                            <h4 class="task-title">
+                                                @task.Title
+                                            </h4>
+                                            <p class="task-summary">@task.Description</p>
+                                            @if (!task.IsDone)
+                                            {
+                                                <span class="media-meta pull-right"><a href="@Url.Action("MarkAsDone", "Task", new { taskId = task.Id })">Prebaci u zavrseno</a></span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5" style="margin-top: 50px;">
+        @if (SessionData.KursnaLista != null)
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4>Kursna lista na dan: @SessionData.KursnaLista.Datum </h4></div>
+                <div class="panel-body">
+                    <div class="box box-info">
+                        <div class="box-body">
+                            <div class="table-responsive">
+                                <table id="kl-table" class="table table-bordred table-striped" style="width: 100%;" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <th></th>
+                                        <th class="valuta-iznos">
+                                            Kupovni
+                                        </th>
+                                        <th class="valuta-iznos">
+                                            Srednji
+                                        </th>
+                                        <th class="valuta-iznos">
+                                            Prodajni
+                                        </th>
+                                    </tr>
+                                    @foreach (var valuta in SessionData.KursnaLista.Valuta)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <img src="@Url.Content("~/Content/img/currencies/" + valuta.Oznaka.ToLower() + ".png")" alt="" width="16px" height="11px">
+                                                @valuta.Oznaka.ToUpper()
+                                            </td>
+                                            <td class="valuta-iznos">
+                                                @valuta.Kup
+                                            </td>
+                                            <td class="valuta-iznos">
+                                                @valuta.Sre
+                                            </td>
+                                            <td class="valuta-iznos">
+                                                @valuta.Pro
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (SessionData.User.Role == DailyJobStarterPack.DataBaseObjects.Role.Admin)
+{
+    foreach (var user in SessionData.Users.OrderBy(x => x.Team.Id))
+    {
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><h4>Pregled korisnika - @user.Team.TeamName</h4></div>
+                    <div class="panel-body">
+                        <div class="box box-info">
+                            <div class="box-body">
+                                <div class="well well-sm">
+                                    <div class="media">
+                                        <a class="thumbnail pull-left" href="#">
+                                            @if (user.Gender == "M")
+                                            {
+                                                <img height="50px" width="50px" src="~/Content/img/icons/avatar-m.png" />
+                                            }
+                                            else
+                                            {
+                                                <img height="50px" width="50px" src="~/Content/img/icons/avatar-z.png" />
+                                            }
+                                        </a>
+                                        <div class="media-body">
+                                            <h4 class="media-heading">@user.FirstName @user.LastName</h4>
+                                            <p><span class="label label-info">@SessionData.Tasks.Count(x => x.UserId == user.Id && !x.IsDone) nezavrsena zadataka</span></p>
+                                            <p>
+                                                <a href="#" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-comment"></span> Dodaj zadatak</a>
+                                                <a href="@Url.Action("ChangeUserData", "Account", new { userId = user.Id})" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-heart"></span> Izmeni</a>
+                                                <a href="#" class="btn btn-xs btn-default confirm-delete" data-id="@user.Id"><span class="glyphicon glyphicon-ban-circle"></span> Obrisi</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    }
+
+    <!--POP UPS-->
+    <div id="modal-from-dom" class="modal hide overlay">
+        <div class="popup">
+            <div class="modal-header">
+                <a href="#" data-dismiss="modal" class="close">&times;</a>
+                <h3>Brisanje korisnika</h3>
+            </div>
+            <div class="modal-body">
+                <p>Trajno cete obrisati korisnika iz sistema.</p>
+                <p>Da li ste sigurni da zelite da nastavite?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="" class="btn danger">Da</a>
+                <a href="#" data-dismiss="modal" class="btn secondary">Ne</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('#modal-from-dom').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('.danger');
+
+        removeBtn.attr('href', 'javascript: DeleteUser(' + id + ')');
+    });
+
+    $('.confirm-delete').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#modal-from-dom').data('id', id).modal('show').trigger('show');
+    });
+
+
+    function DeleteUser(id) {
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("DeleteUser", "Account")",
+           data: { 'userId': id},
+           dataType: "json",
+           success: function (result) {
+               debugger;
+
+               if (result.isSuccessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste obrisali korisnika iz sistema.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom brisanja korisnika iz sistema.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+    </script>
+}

@@ -1,0 +1,146 @@
+﻿@using DailyJobStarterPack.Web.ViewModels.Security
+@using DailyJobStarterPack.DataBaseObjects
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="//cdn.muicss.com/mui-0.9.35/css/mui.min.css" rel="stylesheet" type="text/css" />
+    <script src="//cdn.muicss.com/mui-0.9.35/js/mui.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/scss")
+    @Scripts.Render("~/bundles/modernizr")
+    @*@Scripts.Render("~/bundles/jquery")*@
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/djweb")
+</head>
+<body>
+    @RenderSection("scripts", required: false)
+    <div id="sidedrawer" class="mui--no-user-select">
+        <div id="sidedrawer-brand" class="mui--appbar-line-height">
+            <a href="@Url.Action("Index", "Page")"><span class="mui--text-title"><img class="logo-icon" src="~/Content/img/icons/logo.png" /></span></a>
+        </div>
+        <div class="mui-divider"></div>
+        <ul>
+            <li>
+                <strong>Moj profil</strong>
+                <ul class="move-inside">
+                    <li><a href="@Url.Action("ChangeData", "Account")">Izmeni podatke</a></li>
+                    <li><a href="@Url.Action("Index", "Clients")">Moji klijeti</a></li>
+                    @if (SessionData.User.Role == Role.Admin || SessionData.User.Role == Role.TeamLead)
+                    {
+                        <li><a href="@Url.Action("AllUsers", "Account")">Svi korinsnici</a></li>
+                    }
+                </ul>
+            </li>
+            @if (SessionData.User.Role != Role.Worker)
+            {
+                <li>
+                    <strong><a style="color:black;text-decoration:none;" href="@Url.Action("Statistics", "Clients")">Statistika</a></strong>
+                </li>
+            }
+            <li>
+                <strong>Moduli</strong>
+                <ul class="move-inside">
+                    <li><a href="@Url.Action("Index", "Offer")">Modul za upite</a></li>
+                    <li><a href="@Url.Action("Index", "Creations")">Modul za osnivanje</a></li>
+                </ul>
+            </li>
+            @if (SessionData.User.Role == Role.Admin)
+            {
+                <li>
+                    <strong>Podesavanja</strong>
+                    <ul class="move-inside">
+                        <li><a href="@Url.Action("Index", "Settings")">Podesavanja parametara isplatiovosti</a></li>
+                        <li><a href="@Url.Action("Services", "Settings")">Podesavanje usluga</a></li>
+                        <li><a href="@Url.Action("Firms", "Settings")">Podesavanje firmi</a></li>
+                        <li><a href="@Url.Action("Times", "Settings")">Podesavanje vremena</a></li>
+                    </ul>
+                </li>
+            }
+        </ul>
+    </div>
+    <header id="header" class="header-shadow">
+        <div class="mui-appbar mui--appbar-line-height">
+            <div class="mui-container-fluid">
+                <a class="sidedrawer-toggle mui--visible-xs-inline-block mui--visible-sm-inline-block js-show-sidedrawer">☰</a>
+                <a class="sidedrawer-toggle mui--hidden-xs mui--hidden-sm js-hide-sidedrawer">☰</a>
+                <span class="mui--text-title mui--visible-xs-inline-block mui--visible-sm-inline-block">
+                    <img src="~/Content/img/icons/logo.png" />
+                </span>
+                <table class="header-right">
+                    <tr class="mui--appbar-height">
+                        <td class="mui--text-right">
+                            <ul class="mui-list--inline mui--text-body2">
+                                @if (SessionData.User.Role == Role.Admin)
+                                {
+                                    <li><a href="@Url.Action("AddUser", "Account")"><img class="header-icon user-icon" style="margin-top: 3px" src="~/Content/img/icons/user-icon-black.png" /></a></li>
+                                }
+                                <li><a href="@Url.Action("Index", "Calendar")"><img class="header-icon calendar-icon" src="~/Content/img/icons/calendar-black.png" /></a></li>
+                                <li><a href="@Url.Action("Logout", "Account")"><img class="header-icon logout-icon" src="~/Content/img/icons/logout-black.png" /></a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </header>
+    <script>
+        $(document).ready(function () {
+            $(".user-icon").mouseenter(function () {
+                $('.user-icon').attr('src', "@Url.Content("~/Content/img/icons/user-icon-gray.png")");
+            });
+            $(".user-icon").mouseleave(function () {
+                $('.user-icon').attr('src', "@Url.Content("~/Content/img/icons/user-icon-black.png")");
+            });
+
+
+            $(".notepad-icon").mouseenter(function () {
+                $('.notepad-icon').attr('src', "@Url.Content("~/Content/img/icons/notepad-gray.png")");
+            });
+            $(".notepad-icon").mouseleave(function () {
+                $('.notepad-icon').attr('src', "@Url.Content("~/Content/img/icons/notepad-black.png")");
+            });
+
+            $(".calendar-icon").mouseenter(function () {
+                $('.calendar-icon').attr('src', "@Url.Content("~/Content/img/icons/calendar-gray.png")");
+            });
+            $(".calendar-icon").mouseleave(function () {
+                $('.calendar-icon').attr('src', "@Url.Content("~/Content/img/icons/calendar-black.png")");
+            });
+
+            $(".logout-icon").mouseenter(function () {
+                $('.logout-icon').attr('src', "@Url.Content("~/Content/img/icons/logout-gray.png")");
+            });
+            $(".logout-icon").mouseleave(function () {
+                $('.logout-icon').attr('src', "@Url.Content("~/Content/img/icons/logout-black.png")");
+            });
+        });
+    </script>
+    <div id="content-wrapper">
+        <div class="mui--appbar-height"></div>
+        <div class="mui-container-fluid" style="margin-bottom: 100px;">
+            @RenderBody()
+        </div>
+    </div>
+    <footer id="footer">
+        <div class="mui-container-fluid">
+            <br>
+            Firma, @DateTime.Today.Year
+        </div>
+    </footer>
+</body>
+</html>

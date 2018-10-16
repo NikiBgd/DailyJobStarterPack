@@ -1,0 +1,122 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <a class="btn btn-success btn-xs" id="popup-button" href="@Url.Action("CreateNewFirm", "Settings")">
+            <span class="glyphicon glyphicon-plus"></span> Unseite novu firmu
+        </a>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 10px;">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 ">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Pregled trenutnih firmi</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-filter">
+                    <thead>
+                        <tr>
+                            <td>
+                                Naziv firme
+                            </td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var service in SessionData.Firms)
+                        {
+                            <tr>
+                                <td>
+                                    @service.FirmName
+                                </td>
+                                <td style="text-align: center;">
+                                    <button class="btn btn-danger btn-xs confirm-delete" data-id="@service.FirmId">
+                                        <span class="glyphicon glyphicon-trash"></span> Obrisi firmu
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--POP UPS-->
+    <div id="modal-from-dom" class="modal hide overlay">
+        <div class="popup">
+            <div class="modal-header">
+                <a href="#" data-dismiss="modal" class="close">&times;</a>
+                <h3>Brisanje firme</h3>
+            </div>
+            <div class="modal-body">
+                <p>Trajno cete obrisati firmu iz sistema.</p>
+                <p>Da li ste sigurni da zelite da nastavite?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="" class="btn danger">Da</a>
+                <a href="#" data-dismiss="modal" class="btn secondary">Ne</a>
+            </div>
+        </div>
+    </div>
+    <script>
+    $('#modal-from-dom').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('.danger');
+
+        removeBtn.attr('href', 'javascript: DeleteUser(' + id + ')');
+    });
+
+    $('.confirm-delete').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#modal-from-dom').data('id', id).modal('show').trigger('show');
+    });
+
+
+    function DeleteUser(id) {
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("DeleteFirm", "Settings")",
+           data: { 'firmId': id},
+           dataType: "json",
+           success: function (result) {
+               debugger;
+
+               if (result.isSuccessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste obrisali firmu iz sistema.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom brisanja firme iz sistema.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+    </script>
+    <style>
+        button {
+            border: 1px #AAA solid;
+            padding: 4px 10px;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>

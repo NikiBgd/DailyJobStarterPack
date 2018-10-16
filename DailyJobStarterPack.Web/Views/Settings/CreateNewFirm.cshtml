@@ -1,0 +1,78 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@{
+    var shouldOpenPop = ViewData.ContainsKey("isSuccessful");
+    var isSuccessful = false;
+    if (shouldOpenPop)
+    {
+        isSuccessful = (bool)ViewData["isSuccessful"];
+    }
+}
+<style>
+
+
+</style>
+<div class="row" style="margin-bottom: 50px; margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Novo granicno vreme</h4>
+                <div class="row">
+                </div>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("CreateNewFirm", "Settings", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="FirmName">Naziv firme</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="FirmName" name="FirmName" type="text" class="form-control input-md" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label"></label>
+                            <div class="col-md-4" style="text-align: right">
+                                <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up"></span> Dodaj novu firmu</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- POP UPUS -->
+@if (shouldOpenPop)
+{
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h2>Dodavanje nove</h2>
+            <a class="close" href="@Url.Action("Firms", "Settings")">&times;</a>
+            <div class="content">
+                @if (isSuccessful)
+                {
+                    <span>Uspesno ste dodali novu firmu. Sve firme mozete videti u listi firmi.</span>
+                }
+                else
+                {
+                    <span>Doslo je do greske prilikom dodavanja nove firme.</span>
+                }
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("Firms", "Settings")" data-dismiss="modal" class="btn secondary">U redu</a>
+            </div>
+        </div>
+    </div>
+}

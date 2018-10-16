@@ -1,0 +1,5 @@
+﻿@using DailyJobStarterPack.Web.ViewModels.Security
+
+@{
+    Layout = SessionData.User == null ? "~/Views/Shared/_LayoutPrelogin.cshtml" : "~/Views/Shared/_Layout.cshtml";
+}

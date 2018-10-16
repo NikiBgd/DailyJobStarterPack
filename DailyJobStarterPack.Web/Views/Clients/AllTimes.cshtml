@@ -1,0 +1,95 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DataBaseCommunication.Mappers.Response.Clients
+@using System.Web.Script.Serialization;
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@model  AllTimesForClientResponse
+
+<div class="row" style="margin-bottom: 50px;">
+    <div class="col-md-10 ">
+        @using (Html.BeginForm("AllTimes", "Clients", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            <fieldset>
+                <br><br />
+                <input name="ClientId" id="ClientId" style="display: none" value="@Model.ClientId" />
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="DateFrom">Datum od</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-briefcase">
+                                </i>
+                            </div>
+                            <input id="DateFrom" name="DateFrom" type="text" class="form-control input-md" value="@Model.DateFrom">
+                            <script>
+                                $(function () {
+                                    $("#DateFrom").datepicker();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="DateTo">Datum do</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-briefcase">
+                                </i>
+                            </div>
+                            <input id="DateTo" name="DateTo" type="text" class="form-control input-md" value="@Model.DateTo">
+                            <script>
+                                $(function () {
+                                    $("#DateTo").datepicker();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label"></label>
+                    <div class="col-md-4" style="text-align: right">
+                        <a href="@Url.Action("Details", "Clients", new { clientId = Model.ClientId})" class="btn btn-danger"><span class="glyphicon glyphicon-thumbs-down"></span> Nazad na detalje</a>
+                        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up"></span> Pretrazi</button>
+                    </div>
+                </div>
+            </fieldset>
+        }
+    </div>
+</div>
+
+
+<div class="panel-body">
+    <p>Proknjizena vremena za period od @Model.DateFrom do @Model.DateTo:</p>
+
+    <div class="row" style="margin-bottom: 50px; margin-top: 20px;">
+        <div class="col-md-12">
+            <div class="table-responsive" style="width: 50%;">
+                <table id="mytable" class="table table-bordred table-striped" style="border: 1px solid black; background-color: papayawhip">
+                    <tr>
+                        <th>Korisnik</th>
+                        <th>Datum knjizenja</th>
+                        <th>Vreme</th>
+                    </tr>
+
+                    @foreach (var time in Model.Times)
+                    {
+                        <tr>
+                            <td>
+                                @{
+                                    var user = SessionData.Users.FirstOrDefault(x => x.Id == time.UserId);
+                                    if(user != null)
+                                    {
+                                        <span>@user.FirstName @user.LastName</span>
+                                    }
+                                }
+                            </td>
+                            <td>@time.InsertionDate</td>
+                            <td>@time.Time h</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

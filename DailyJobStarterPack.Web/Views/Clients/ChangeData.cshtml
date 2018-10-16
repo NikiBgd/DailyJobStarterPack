@@ -1,0 +1,480 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@model  ClientProfile
+
+@{
+    var shouldOpenPop = ViewData.ContainsKey("isSuccessful");
+    var isSuccessful = false;
+    if (shouldOpenPop)
+    {
+        isSuccessful = (bool)ViewData["isSuccessful"];
+    }
+
+}
+
+<div class="row" style="margin-bottom: 50px;">
+    <div class="col-md-10 ">
+        @using (Html.BeginForm("ChangeData", "Clients", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            <input name="CustomerId" id="CustomerId" style="display: none" value="@Model.CustomerID" />
+            <fieldset>
+                <br><br />
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Name">Naziv</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Name" name="Name" type="text" class="form-control input-md" value="@Model.Name">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Address">Adresa</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-user">
+                                </i>
+                            </div>
+                            <input id="Address" name="Address" type="text" class="form-control input-md" value="@Model.Address">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Place">Mesto</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-user">
+                                </i>
+                            </div>
+                            <input id="Place" name="Place" type="text" class="form-control input-md" value="@Model.Place">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Municipality">Opstina</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-birthday-cake">
+                                </i>
+                            </div>
+                            <input id="Municipality" name="Municipality" type="text" class="form-control input-md" value="@Model.Municipality">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="PIB">PIB</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-clock-o">
+                                </i>
+                            </div>
+                            <input id="PIB" name="PIB" type="text" class="form-control input-md" value="@Model.PIB">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="LegalID">Maticni broj</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-database">
+                                </i>
+                            </div>
+                            <input id="LegalID" name="LegalID" type="text" class="form-control input-md" value="@Model.LegalID">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="CreationDate">Datum osnivanja</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-briefcase">
+                                </i>
+                            </div>
+                            <input id="CreationDate" name="CreationDate" type="text" class="form-control input-md" value="@Model.CreationDate">
+                            <script>
+                                $(function () {
+                                    $("#CreationDate").datepicker();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ActivityCode">Sifra delatnosti</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-home" style="font-size: 20px;"></i>
+                            </div>
+                            <input id="ActivityCode" name="ActivityCode" type="text" class="form-control input-md" value="@Model.ActivityCode">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Activity">Delatnost</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-home" style="font-size: 20px;"></i>
+                            </div>
+                            <input id="Activity" name="Activity" type="text" class="form-control input-md" value="@Model.Activity">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Form">Oblik</label>
+                    <div class="col-md-4">
+                        <label class="radio-inline" for="Form-0">
+                            <input type="radio" name="Form" id="Form-0" value="DOO" @(Model.Form == "DOO" ? "checked='checked'" : "")>
+                            DOO
+                        </label>
+                        <label class="radio-inline" for="Form-1">
+                            <input type="radio" name="Form" id="Form-1" value="Preduzetnik" @(Model.Form == "Preduzetnik" ? "checked='checked'" : "")>
+                            Preduzetnik
+                        </label>
+                        <label class="radio-inline" for="Form-2">
+                            <input type="radio" name="Form" id="Form-2" value="Udruzenje" @(Model.Form == "Udruzenje" ? "checked='checked'" : "")>
+                            Udruzenje
+                        </label>
+                    </div>
+                </div>
+
+                @if (Model.Form == "Preduzetnik")
+                {
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="FormSubType">Podoblik</label>
+                        <div class="col-md-4">
+                            <label class="radio-inline" for="FormSubType-0">
+                                <input type="radio" name="FormSubType" id="FormSubType-0" value="Licna zarada" @(Model.FormSubType == "Licna zarada" ? "checked='checked'" : "")>
+                                Licna zarada
+                            </label>
+                            <label class="radio-inline" for="FormSubType-1">
+                                <input type="radio" name="FormSubType" id="FormSubType-1" value="Samooporezivanje" @(Model.FormSubType == "Samooporezivanje" ? "checked='checked'" : "")>
+                                Samoooprezivanje
+                            </label>
+                            <label class="radio-inline" for="FormSubType-2">
+                                <input type="radio" name="FormSubType" id="FormSubType-2" value="Pausal" @(Model.FormSubType == "Pausal" ? "checked='checked'" : "")>
+                                Pausal
+                            </label>
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="StartDate">Datum pocetka saradnje</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-briefcase">
+                                </i>
+                            </div>
+                            <input id="StartDate" name="StartDate" type="text" class="form-control input-md" value="@Model.StartDate">
+                            <script>
+                                $(function () {
+                                    $("#StartDate").datepicker();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ResponsiblePerson">Odgovorno lice</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-home" style="font-size: 20px;"></i>
+                            </div>
+                            <input id="ResponsiblePerson" name="ResponsiblePerson" type="text" class="form-control input-md" value="@Model.ResponsiblePerson">
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ResponsiblePersonPhone">Telefon odgovrnog lica</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <input id="ResponsiblePersonPhone" name="ResponsiblePersonPhone " type="text" class="form-control input-md" value="@Model.ResponsiblePersonPhone">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ResponsiblePersonMail">Email odgovornog lica</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="ResponsiblePersonMail" name="ResponsiblePersonMail" type="text" class="form-control input-md" value="@Model.ResponsiblePersonMail">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="AdditionalMails">Dodatni mail-ovi</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="AdditionalMails" name="AdditionalMails" type="text" class="form-control input-md" value="@Model.AdditionalMails">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ResponsiblePersonBirthDate">Rodjendan odgovornog lica</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="ResponsiblePersonBirthDate" name="ResponsiblePersonBirthDate" type="text" class="form-control input-md" value="@Model.ResponsiblePersonBirthDate">
+                            <script>
+                                  $(function () {
+                                      $("#ResponsiblePersonBirthDate").datepicker();
+                                  });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="PDV">PDV</label>
+                    <div class="col-md-4">
+                        <label class="radio-inline" for="PDV-0">
+                            <input type="radio" name="PDV" id="PDV-0" value="mesecni" @(Model.PDV == "mesecni" ? "checked='checked'" : "")>
+                            Mesecni
+                        </label>
+                        <label class="radio-inline" for="PDV-1">
+                            <input type="radio" name="PDV" id="PDV-1" value="tromesecni" @(Model.PDV == "tromesecni" ? "checked='checked'" : "")>
+                            Tromesecni
+                        </label>
+                    </div>
+                </div>
+
+                @*<div class="form-group">
+                    <label class="col-md-4 control-label" for="BookKeepingType">Tip knjigovodstava</label>
+                    <div class="col-md-4">
+                        <label class="radio-inline" for="BookKeepingType-0">
+                            <input type="radio" name="BookKeepingType" id="BookKeepingType-0" value="prosto" @(Model.BookKeepingType == "prosto" ? "checked='checked'" : "")>
+                            Prosto
+                        </label>
+                        <label class="radio-inline" for="BookKeepingType-1">
+                            <input type="radio" name="BookKeepingType" id="BookKeepingType-1" value="dvojno" @(Model.BookKeepingType == "dvojno" ? "checked='checked'" : "")>
+                            Dvojno
+                        </label>
+                    </div>
+                </div>*@
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Director">Direktor</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Director" name="Director" type="text" class="form-control input-md" value="@Model.Director">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="EmployeesNumber">Broj zaposlenih</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="EmployeesNumber" name="EmployeesNumber" type="text" class="form-control input-md" value="@Model.EmployeesNumber">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Account">Racuni</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Account" name="Account" type="text" class="form-control input-md" value="@Model.Account">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Amount">Iznos</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Amount" name="Amount" type="text" class="form-control input-md" value="@Model.Amount">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="AmountCode" name="AmountCode" type="text" class="form-control input-md" value="@Model.AmountCode">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Slava">Slava</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Slava" name="Slava" type="text" class="form-control input-md" value="@Model.Slava">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="BirthDate">Rodjendan</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="BirthDate" name="BirthDate" type="text" class="form-control input-md" value="@Model.BirthDate">
+                            <script>
+                                  $(function () {
+                                      $("#BirthDate").datepicker();
+                                  });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="DeliveryMethod">Metod dostave</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="DeliveryMethod" name="DeliveryMethod" type="text" class="form-control input-md" value="@Model.DeliveryMethod">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="CourierDay">Dan u nedelju za kurire</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <select id="CourierDay" name="CourierDay" class="form-control">
+                                <option value="1" @(Model.CourierDay == 1 ? "selected='selected'" : "")>Ponedeljak</option>
+                                <option value="2" @(Model.CourierDay == 2 ? "selected='selected'" : "")>Utorak</option>
+                                <option value="3" @(Model.CourierDay == 3 ? "selected='selected'" : "")>Sreda</option>
+                                <option value="4" @(Model.CourierDay == 4 ? "selected='selected'" : "")>Cetvrtak</option>
+                                <option value="5" @(Model.CourierDay == 5 ? "selected='selected'" : "")>Petak</option>
+                                <option value="6" @(Model.CourierDay == 6 ? "selected='selected'" : "")>Subota</option>
+                                <option value="7" @(Model.CourierDay == 7 ? "selected='selected'" : "")>Nedelja</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                @if (SessionData.User.Role == Role.Admin)
+                {
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="MainUserId">Knjigovodja</label>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-envelope-o"></i>
+                                </div>
+                                <select id="MainUserId" name="MainUserId" class="form-control" value="@Model.MainUserId">
+                                    @foreach (var user in SessionData.Users)
+                                    {
+                                        <option value="@user.Id" @(Model.MainUserId == user.Id ? "selected='selected'" : "")>@user.FirstName @user.LastName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="SecondUserId">Obracunski radnik</label>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-envelope-o"></i>
+                                </div>
+                                <select id="SecondUserId" name="SecondUserId" class="form-control" value="@Model.SecondUserId">
+                                    @foreach (var user in SessionData.Users)
+                                    {
+                                        <option value="@user.Id" @(Model.SecondUserId == user.Id ? "selected='selected'" : "")>@user.FirstName @user.LastName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label"></label>
+                    <div class="col-md-4" style="text-align: right">
+                        <a href="@Url.Action("Details", "Clients", new { clientId = Model.CustomerID})" class="btn btn-danger"><span class="glyphicon glyphicon-thumbs-down"></span> Odustani od promena</a>
+                        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up"></span> Potvrdi promene</button>
+                    </div>
+                </div>
+            </fieldset>
+        }
+    </div>
+</div>
+
+<!-- POP UPUS -->
+@if (shouldOpenPop)
+{
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h2>Promena podataka</h2>
+            <a class="close" href="@Url.Action("ChangeData", "Clients", new { clientId = Model.CustomerID})">&times;</a>
+            <div class="content">
+                @if (isSuccessful)
+                {
+                    <span>Uspesno ste promenili podatke klijenta.</span>
+                }
+                else
+                {
+                    <span>Doslo je do greske prilikom promene podataka</span>
+                }
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("ChangeData", "Clients", new { clientId = Model.CustomerID})" data-dismiss="modal" class="btn secondary">U redu</a>
+            </div>
+        </div>
+    </div>
+}

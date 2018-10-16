@@ -1,0 +1,231 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@model  UserProfile
+
+@{
+    var shouldOpenPop = ViewData.ContainsKey("isSuccessful");
+    var isSuccessful = false;
+    if (shouldOpenPop)
+    {
+        isSuccessful = (bool)ViewData["isSuccessful"];
+    }
+
+}
+<style>
+
+
+</style>
+<div class="row" style="margin-bottom: 50px; margin-top: 50px;">
+    <div class="col-md-10 ">
+        @using (Html.BeginForm("AddUser", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="FirstName">Ime</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-user">
+                                </i>
+                            </div>
+                            <input id="FirstName" name="FirstName" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="LastName">Prezime</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-user">
+                                </i>
+                            </div>
+                            <input id="LastName" name="LastName" type="text" class="form-control input-md" >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="BirthDate">Datum rodjenja</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-birthday-cake">
+                                </i>
+                            </div>
+                            <input id="BirthDate" name="BirthDate" type="text" class="form-control input-md">
+                            <script>
+                                $(function () {
+                                    $("#BirthDate").datepicker();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="EmploymentDate">Datum zaposlenja</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-clock-o">
+                                </i>
+                            </div>
+                            <input id="EmploymentDate" name="EmploymentDate" type="text" class="form-control input-md" >
+                            <script>
+                                 $(function () {
+                                     $("#EmploymentDate").datepicker();
+                                 });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Id">Tim</label>
+                    <div class="col-md-4">
+                        <label class="radio-inline" for="Id-1">
+                            <input type="radio" name="Id" id="Id-1" value="1">
+                            Arkanovi tigrovi
+                        </label>
+                        <label class="radio-inline" for="Id-2">
+                            <input type="radio" name="Id" id="Id-2" value="2">
+                            Male mace
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Role">Uloga</label>
+                    <div class="col-md-8">
+                        <label class="radio-inline" for="Role-1">
+                            <input type="radio" name="Role" id="Role-1" value="1">
+                            Admin
+                        </label>
+                        <label class="radio-inline" for="Role-2">
+                            <input type="radio" name="Role" id="Role-1" value="2">
+                            Team Leader
+                        </label>
+                        <label class="radio-inline" for="Role-3">
+                            <input type="radio" name="Role" id="Role-3" value="3">
+                            Worker
+                        </label>
+                        <label class="radio-inline" for="Role-3">
+                            <input type="radio" name="Role" id="Role-3" value="4">
+                            Calculation
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Address">Adresa</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-home" style="font-size: 20px;"></i>
+                            </div>
+                            <input id="Address" name="Address" type="text" class="form-control input-md" >
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="City">Grad</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-home" style="font-size: 20px;"></i>
+                            </div>
+                            <input id="City" name="City" type="text" class="form-control input-md" >
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Gender">Pol</label>
+                    <div class="col-md-4">
+                        <label class="radio-inline" for="Gender-0">
+                            <input type="radio" name="Gender" id="Gender-0" value="M" >
+                            Muški
+                        </label>
+                        <label class="radio-inline" for="Gender-1">
+                            <input type="radio" name="Gender" id="Gender-1" value="F" >
+                            Ženski
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="PhoneNumber ">Telefon</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-phone"></i>
+
+                            </div>
+                            <input id="PhoneNumber" name="PhoneNumber " type="text" class="form-control input-md">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Email">Email</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+
+                            </div>
+                            <input id="Email" name="Email" type="text" class="form-control input-md">
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Slava">Slava</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+
+                            </div>
+                            <input id="Slava" name="Slava" type="text" class="form-control input-md">
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label"></label>
+                    <div class="col-md-4" style="text-align: right">
+                        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up"></span> Dodaj korisnika</button>
+                    </div>
+                </div>
+            </fieldset>
+        }
+    </div>
+</div>
+
+<!-- POP UPUS -->
+@if (shouldOpenPop)
+{
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h2>Promena podataka</h2>
+            <a class="close" href="@Url.Action("AllUsers", "Account")">&times;</a>
+            <div class="content">
+                @if (isSuccessful)
+                {
+                    <span>Uspesno ste dodali novog korisnika. Sve korisnike mozete videti u listi korisnika.</span>
+                }
+                else
+                {
+                    <span>Doslo je do greske prilikom dovanja korisnika.</span>
+                }
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("AllUsers", "Account")" data-dismiss="modal" class="btn secondary">U redu</a>
+            </div>
+        </div>
+    </div>
+}

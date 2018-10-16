@@ -1,0 +1,442 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security;
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-11">
+        <a class="btn btn-success btn-xs" id="popup-button" href="@Url.Action("Create", "Creations")">
+            <span class="glyphicon glyphicon-plus"></span> Unseite novu ponudu
+        </a>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 10px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>
+                    <div class="col-md-11">
+                        Aktivne ponude osnivanja
+                    </div>
+                    <div class="col-md-1 task-number task-number-active">
+                        <span style="margin-left: -5px">@SessionData.Creations.Count(x => !x.IsDone)</span>
+                    </div>
+                </h4>
+                <div class="row">
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="mytable" class="table table-bordred table-striped" style="border: 1px solid black;">
+                        <tr>
+                            <th>Datum ponude</th>
+                            <th>Tip posla</th>
+                            <th>Datum slanja formulara</th>
+                            <th>Ime klijenta</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Tip klijenta</th>
+                            <th>Status</th>
+                            <th>Tip placanja</th>
+                            <th>Napomena</th>
+                            <th>Opcije</th>
+                        </tr>
+                        <tbody>
+                            @foreach (var creation in SessionData.Creations.Where(x => !x.IsDone).OrderByDescending(x => x.CreationDate))
+                            {
+                                var serviceNames = "";
+                                creation.Services.ForEach(x => serviceNames += x.ServiceName + "<br>");
+                                <tr>
+                                    <td>@creation.CreationDate</td>
+                                    <td>@Html.Raw(serviceNames)</td>
+                                    <td>@(creation.FormularDate == null || creation.FormularDate == DateTime.MinValue ? "-" : creation.FormularDate.ToShortDateString())</td>
+                                    <td>@creation.Name</td>
+                                    <td>@creation.Mail</td>
+                                    <td>@creation.PhoneNumber</td>
+                                    <td>@ResourcesHelper.GetClientType(creation.ClientType)</td>
+                                    <td>@ResourcesHelper.GetClientStatus(creation.Status)</td>
+                                    <td>@ResourcesHelper.GetClientPaymentMethod(creation.PaymentMethod)</td>
+                                    <td>@creation.Note</td>
+                                    <td>
+                                        @if (!creation.IsMailSent)
+                                        {
+                                            <button class="btn btn-info btn-xs btn-block show-send-mail" data-id="@creation.CreationId">
+                                                <span class="glyphicon glyphicon-envelope"> Posalji mail</span>
+                                            </button>
+                                        }
+                                        @if (!creation.IsAnswerSuccesful)
+                                        {
+                                            <button class="btn btn-success btn-xs btn-block show-answer-sucess" data-id="@creation.CreationId">
+                                                <span class="glyphicon glyphicon-ok"> Potvrdio</span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("PrintDocuments", "Creations", new { creationId = creation.CreationId })"class="btn btn-info btn-xs btn-block" data-id="@creation.CreationId">
+                                                Preuzmi sablone
+                                            </a>
+                                        }
+
+                                        @if (!creation.IsPaid)
+                                        {
+                                            <button class="btn btn-default btn-xs btn-block show-paid" data-id="@creation.CreationId">
+                                                <span class="glyphicon glyphicon-euro"> Placeno</span>
+                                            </button>
+                                        }
+
+                                        @if (creation.PaymentMethod == 4)
+                                        {
+                                            <button class="btn btn-default btn-xs btn-block create-payment-bill" data-id="@creation.CreationId">
+                                                <span class="glyphicon glyphicon-euro"> Faktura</span>
+                                            </button>
+                                        }
+
+                                        @if (!creation.IsDone)
+                                        {
+                                            <button class="btn btn-default btn-xs btn-block show-done" data-id="@creation.CreationId">
+                                                <span class="glyphicon glyphicon-remove"> Uradjeno</span>
+                                            </button>
+                                        }
+
+                                        <a href="@Url.Action("UpdateCreation", "Creations", new { CreationId = creation.CreationId})" class="btn btn-danger btn-xs btn-block">
+                                            Izmeni <span class="glyphicon glyphicon-chevron-right"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="margin-bottom: 50px; margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>
+                    <div class="col-md-11">
+                        Zavrsene ponude osnivanja
+                    </div>
+                    <div class="col-md-1 task-number">
+                        <span style="margin-left: -5px">@SessionData.Creations.Count(x => x.IsDone)</span>
+                    </div>
+                </h4>
+                <div class="row">
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="mytable" class="table table-bordred table-striped" style="border: 1px solid black;">
+                        <tr>
+                            <th>Datum osnivanja</th>
+                            <th>Tip posla</th>
+                            <th>Datum slanja formulara</th>
+                            <th>Ime klijenta</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Tip klijenta</th>
+                            <th>Opcije</th>
+                        </tr>
+                        <tbody>
+                            @foreach (var creation in SessionData.Creations.Where(x => x.IsDone).OrderByDescending(x => x.CreationDate))
+                            {
+                                var serviceNames = "";
+                                creation.Services.ForEach(x => serviceNames += x.ServiceName + "<br>");
+                                <tr>
+                                    <td>@creation.CreationDate</td>
+                                    <td>@Html.Raw(serviceNames)</td>
+                                    <td>@creation.FormularDate</td>
+                                    <td>@creation.Name</td>
+                                    <td>@creation.Mail</td>
+                                    <td>@creation.PhoneNumber</td>
+                                    <td>@ResourcesHelper.GetClientType(creation.ClientType)</td>
+                                    <td>
+                                        @if (!creation.IsMailSent)
+                                        {
+                                            <button class="btn btn-info btn-xs btn-block show-send-mail" data-id="@creation.CreationId">
+                                                <span class="glyphicon glyphicon-envelope"> Posalji mail</span>
+                                            </button>
+                                        }
+                                        @if (!creation.IsAnswerSuccesful)
+                                        {
+                                            <button class="btn btn-success btn-xs btn-block show-answer-sucess" data-id="@creation.CreationId">
+                                                <span class="glyphicon glyphicon-ok"> Potvrdi odgovor</span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("PrintDocuments", "Creations", new { creationId = creation.CreationId })" class="btn btn-info btn-xs btn-block" data-id="@creation.CreationId">
+                                                Preuzmi sablone
+                                            </a>
+                                        }
+
+                                        @if (!creation.IsPaid)
+                                        {
+                                            <button class="btn btn-default btn-xs btn-block show-paid" data-id="@creation.CreationId">
+                                                <span class="glyphicon glyphicon-euro"> Placeno</span>
+                                            </button>
+                                        }
+
+                                        @if (!creation.IsDone)
+                                        {
+                                            <button class="btn btn-default btn-xs btn-block show-done" data-id="@creation.CreationId">
+                                                <span class="glyphicon glyphicon-remove"> Uradjeno</span>
+                                            </button>
+                                        }
+
+                                        <a class="btn btn-danger btn-xs btn-block" data-id="@creation.CreationId">
+                                            Upit <span class="glyphicon glyphicon-chevron-right"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--POP UPS-->
+<div id="send-mail" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Slanje maila</h3>
+        </div>
+        <div class="modal-body">
+            <p>Nakon sto jednom posaljete mail, ne mozete obustaviti ovu akciju</p>
+            <p>Da li ste sigurni da zelite da nastavite?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="" class="btn danger" id="send-mail-confirm">Da</a>
+            <a href="#" data-dismiss="modal" class="btn secondary">Ne</a>
+        </div>
+    </div>
+</div>
+
+<div id="answer-sucess" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Prihvatanje ponude</h3>
+        </div>
+        <div class="modal-body">
+            <p>Ovo je trajna izmena.</p>
+            <p>Da li ste sigurni klijent prihvatio ponudu?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="" class="btn danger" id="answer-sucess-confirm">Da</a>
+            <a href="#" data-dismiss="modal" class="btn secondary">Ne</a>
+        </div>
+    </div>
+</div>
+
+<div id="paid-sucess" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Placanje klijenta</h3>
+        </div>
+        <div class="modal-body">
+            <p>Ovo je trajna izmena.</p>
+            <p>Da li ste sigurni da zelite da oznacite da je klijent platio?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="" class="btn danger" id="paid-sucess-confirm">Da</a>
+            <a href="#" data-dismiss="modal" class="btn secondary">Ne</a>
+        </div>
+    </div>
+</div>
+
+<div id="done-sucess" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Prebaci u zavreseno</h3>
+        </div>
+        <div class="modal-body">
+            <p>Ovo je trajna izmena.</p>
+            <p>Da li ste sigurni da zelite da prebacite u zavresno?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="" class="btn danger" id="done-sucess-confirm">Da</a>
+            <a href="#" data-dismiss="modal" class="btn secondary">Ne</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#send-mail').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('#send-mail-confirm');
+
+        removeBtn.attr('href', 'javascript: SendMail(' + id + ')');
+    });
+
+    $('.show-send-mail').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#send-mail').data('id', id).modal('show').trigger('show');
+    });
+
+    function SendMail(id) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("SendMail", "Creations")",
+           data: { 'creationId': id},
+           dataType: "json",
+           success: function (result) {
+               debugger;
+
+               if (result.IsSucessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste poslali mail.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom slanja mail-a.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+
+
+    $('#answer-sucess').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('#answer-sucess-confirm');
+
+        removeBtn.attr('href', 'javascript: UpdateAnswerStatus(' + id + ')');
+    });
+
+    $('.show-answer-sucess').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#answer-sucess').data('id', id).modal('show').trigger('show');
+    });
+
+    function UpdateAnswerStatus(id) {
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("UpdateAnswerStatus", "Creations")",
+           data: { 'creationId': id},
+           dataType: "json",
+           success: function (result) {
+               debugger;
+
+               if (result.IsSucessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste izmenili status odgovora.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom izmene statusa odgovora.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+
+    $('#paid-sucess').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('#paid-sucess-confirm');
+
+        removeBtn.attr('href', 'javascript: UpdatePaymentStatus(' + id + ')');
+    });
+
+    $('.show-paid').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#paid-sucess').data('id', id).modal('show').trigger('show');
+    });
+
+    function UpdatePaymentStatus(id) {
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("UpdatePaymentStatus", "Creations")",
+           data: { 'creationId': id},
+           dataType: "json",
+           success: function (result) {
+               debugger;
+
+               if (result.IsSucessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste izmenili status placanja.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom izmene statusa placanja.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+
+    $('#done-sucess').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('#done-sucess-confirm');
+
+        removeBtn.attr('href', 'javascript: UpdateDoneStatus(' + id + ')');
+    });
+
+    $('.show-done').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#done-sucess').data('id', id).modal('show').trigger('show');
+    });
+
+    function UpdateDoneStatus(id) {
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("UpdateDoneStatus", "Creations")",
+           data: { 'creationId': id},
+           dataType: "json",
+           success: function (result) {
+               debugger;
+
+               if (result.IsSucessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste izmenili status zavrsenosti.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom izmene statusa zavresenosti.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+</script>

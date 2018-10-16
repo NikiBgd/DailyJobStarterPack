@@ -1,0 +1,144 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-11">
+        <a class="btn btn-success btn-xs" id="popup-button" href="@Url.Action("CreateNewTime", "Settings")">
+            <span class="glyphicon glyphicon-plus"></span> Unseite novo granicno vreme
+        </a>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-10 ">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Pregled trenutnih podesavanja vremena</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-filter">
+                    <thead>
+                        <tr>
+                            <td>
+                                Naziv podesavanja
+                            </td>
+                            <td>
+                                Opis podesavanja
+                            </td>
+                            <td>
+                                Vrednost
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var time in SessionData.Times)
+                        {
+                            <tr>
+                                <td>
+                                    @time.TimeName
+                                </td>
+                                <td>
+                                    @time.TimeDescription
+                                </td>
+                                <td>
+                                    @time.Value
+                                </td>
+                                <td>
+                                    <a href="javascript: ShowPopUp('@time.TimeId', '@time.TimeDescription', '@time.Value')">Izmeni podesavanja</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--POP UPS-->
+<div id="modal-from-dom-settings" class="modal hide overlay">
+    <div class="popup">
+        @using (Html.BeginForm("Times", "Settings", FormMethod.Post, new { @class = "form-horizontal", id = "times-form", role = "form" }))
+        {
+            <input type="text" name="TimeId" id="TimeId" style="display:none" />
+            <div class="modal-header">
+                <a href="#" data-dismiss="modal" class="close">&times;</a>
+                <h3>Promena podesavanja</h3>
+            </div>
+            <div class="modal-body" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="TimeDescription">Opis</label>
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-user">
+                                </i>
+                            </div>
+                            <input id="TimeDescription" name="TimeDescription" type="text" class="form-control input-md" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessageTimeDescription"></div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="Value">Vrednost</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-birthday-cake">
+                                </i>
+                            </div>
+                            <input id="Value" name="Value" type="text" class="form-control input-md" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessageValue"></div>
+                </div>
+
+                <div style="border-bottom: 1px solid #e5e5e5;text-align:right; ">
+                    <button type="submit" class="btn danger">U redu</button>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
+<script>
+    function ShowPopUp(id, timeDesc, timeVal) {
+        debugger;
+        $("#TimeId").val(id);
+        $("#TimeDescription").val(timeDesc)
+        $("#Value").val(timeVal)
+
+        $('#modal-from-dom-settings').modal({
+            backdrop: 'static',
+            keyboard: true,
+            show: true
+        });
+    }
+
+    $("#times-form").submit(function (e) {
+        $('.errorMessageTimeDescription').html('');
+        $('.errorMessageValue').html('');
+
+        var timeDesc = $("#TimeDescription").val()
+        var timeVal = $("#Value").val()
+
+        if (timeDesc == undefined || timeDesc == "") {
+            $('.errorMessageTimeDescription').html('<p style="color: red;">Morate uneti opis!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+
+        if (timeVal == undefined || timeVal == "") {
+            $('.errorMessageValue').html('<p style="color: red;">Morate uneti vrednost!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+    });
+</script>

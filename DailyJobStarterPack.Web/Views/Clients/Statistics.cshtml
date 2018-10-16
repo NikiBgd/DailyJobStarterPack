@@ -1,0 +1,576 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DataBaseCommunication.Mappers.Response.Clients
+@using System.Web.Script.Serialization;
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@model  List<ClientProfile>
+@{
+    var dooCount = Model.Count(x => x.Form == "DOO");
+    var udruzenjeCount = Model.Count(x => x.Form == "Udruzenje");
+    var preduzetniciCount = Model.Count(x => x.Form == "Preduzetnik");
+
+    var pausalCount = Model.Count(x => x.Form == "Preduzetnik" && x.FormSubType == "Pausal");
+    var samoCount = Model.Count(x => x.Form == "Preduzetnik" && x.FormSubType == "Samooporezivanje");
+    var licnaCount = Model.Count(x => x.Form == "Preduzetnik" && x.FormSubType == "Licna zarada");
+
+    var groups = Model.GroupBy(s => s.ActivityCode).Select(
+    s => new { Code = s.Key, Count = s.Count() }).OrderBy(s => s.Code);
+
+    var dictionary = groups.ToDictionary(g => g.Code, g => g.Count);
+
+    var codes = new JavaScriptSerializer().Serialize(dictionary.Keys);
+    var values = new JavaScriptSerializer().Serialize(dictionary.Values);
+
+
+    var dooPrice = Model.Where(x => x.Form == "DOO").Average(x => x.LocalAmount);
+    var udruzenjePrice = Model.Where(x => x.Form == "Udruzenje").Average(x => x.LocalAmount);
+    var preduzetniciPrice = Model.Where(x => x.Form == "Preduzetnik").Average(x => x.LocalAmount);
+
+    var pausalPrice = Model.Where(x => x.Form == "Preduzetnik" && x.FormSubType == "Pausal").Average(x => x.LocalAmount);
+    var samoPrice = Model.Where(x => x.Form == "Preduzetnik" && x.FormSubType == "Samooporezivanje").Average(x => x.LocalAmount);
+    var licnaPrice = Model.Where(x => x.Form == "Preduzetnik" && x.FormSubType == "Licna zarada").Average(x => x.LocalAmount);
+ }
+
+<div class="row" style="margin: 50px; background-color: white; padding-left: 5px;">
+    <h5>Prosecna cena klijenta iznosi: @Math.Round(Model.Average(x => x.LocalAmount)) RSD</h5>
+</div>
+
+<div class="row" style="margin: 50px; background-color: white; text-align: center;">
+    <h5>Odnos DOO, Preduzetnika i udruzenja</h5>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white; text-align:right; padding-top: 5px;">
+    <div class="col-md-6">
+        <a id="url" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi pie</span>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a id="url2" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi bar</span>
+        </a>
+    </div>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white;">
+    <div class="col-md-6">
+        <canvas id="myChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="myChart2"></canvas>
+    </div>
+</div>
+
+<div class="row" style="margin: 50px; background-color: white; text-align: center;">
+    <h5>Odnos Licne zarade, Samooporezivanja i pausala</h5>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white; text-align:right; padding-top: 5px;">
+    <div class="col-md-6">
+        <a id="url3" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi pie</span>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a id="url4" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi bar</span>
+        </a>
+    </div>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white;">
+    <div class="col-md-6">
+        <canvas id="myChart3"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="myChart4"></canvas>
+    </div>
+</div>
+
+<div class="row" style="margin: 50px; background-color: white; text-align: center;">
+    <h5>Podela po sifri delatnosti</h5>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white; text-align:right; padding-top: 5px;">
+    <div class="col-md-6">
+        <a id="url5" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi pie</span>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a id="url6" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi bar</span>
+        </a>
+    </div>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white;">
+    <div class="col-md-6">
+        <canvas id="myChart5"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="myChart6"></canvas>
+    </div>
+</div>
+
+
+<div class="row" style="margin: 50px; background-color: white; text-align: center;">
+    <h5>Prosecna cena po obliku firme</h5>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white; text-align:right; padding-top: 5px;">
+    <div class="col-md-6">
+        <a id="url7" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi pie</span>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a id="url8" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi bar</span>
+        </a>
+    </div>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white;">
+    <div class="col-md-6">
+        <canvas id="myChart7"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="myChart8"></canvas>
+    </div>
+</div>
+
+<div class="row" style="margin: 50px; background-color: white; text-align: center;">
+    <h5>Prosecna cena po obliku preduzetnika</h5>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white; text-align:right; padding-top: 5px;">
+    <div class="col-md-6">
+        <a id="url9" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi pie</span>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a id="url10" href="" style="" download class="btn btn-default" aria-label="Left Align">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"> Preuzmi bar</span>
+        </a>
+    </div>
+</div>
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white;">
+    <div class="col-md-6">
+        <canvas id="myChart9"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="myChart10"></canvas>
+    </div>
+</div>
+
+<h3>Potencijalni klijenti</h3>
+
+<div class="row" style="margin-left:50px;margin-right:50px; background-color: white;">
+    <div class="col-md-6">
+        <canvas id="myChart11"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="myChart12"></canvas>
+    </div>
+</div>
+
+
+<script>
+    var options = {
+        animation: {
+            onComplete: done
+        }
+    };
+    var ctx = document.getElementById("myChart");
+    function done() {
+        var url = myChart.toBase64Image();
+        document.getElementById("url").href = url;
+    }
+    function done2() {
+        var url = myChart2.toBase64Image();
+        document.getElementById("url2").href = url;
+    }
+    var myChart = new Chart(ctx, {
+        "type": "doughnut",
+        options: options,
+        "data": {
+            "labels": [
+                "DOO",
+                "Preduzetnici",
+                "Udruzenja"
+            ],
+            "datasets": [
+                {
+                    "label": "",
+                    "data": [
+                        '@dooCount',
+                        '@preduzetniciCount',
+                        '@udruzenjeCount'
+                    ],
+                    "backgroundColor": [
+                        "rgb(255, 99, 132)",
+                        "rgb(54, 162, 235)",
+                        "rgb(255, 205, 86)"
+                    ]
+                }
+            ]
+        }
+    });
+
+    options2 =  {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+        animation: {
+            onComplete: done2
+        }
+    }
+    var ctx2 = document.getElementById("myChart2").getContext("2d");
+    var myChart2 = new Chart(ctx2, {
+        "type": "bar",
+        options: options2,
+        "data": {
+            "labels": [
+                "DOO",
+                "Preduzetnici",
+                "Udruzenja"
+            ],
+            "datasets": [
+                {
+                    "label": "",
+                    "data": [
+                        '@dooCount',
+                        '@preduzetniciCount',
+                        '@udruzenjeCount'
+                    ],
+                    "backgroundColor": [
+                        "rgb(255, 99, 132)",
+                        "rgb(54, 162, 235)",
+                        "rgb(255, 205, 86)"
+                    ]
+                }
+            ]
+        }
+    });
+    //---------------------------------------------------//
+    var options3 = {
+        animation: {
+            onComplete: done3
+        }
+    };
+    var ctx3 = document.getElementById("myChart3");
+    function done3() {
+        var url = myChart3.toBase64Image();
+        document.getElementById("url3").href = url;
+    }
+    function done4() {
+        var url = myChart4.toBase64Image();
+        document.getElementById("url4").href = url;
+    }
+    var myChart3 = new Chart(ctx3, {
+        "type": "doughnut",
+        options: options3,
+        "data": {
+            "labels": [
+                "Licna zarada",
+                "Samooporezivanje",
+                "Pausal"
+            ],
+            "datasets": [
+                {
+                    "label": "",
+                    "data": [
+                        '@licnaCount',
+                        '@samoCount',
+                        '@pausalCount'
+                    ],
+                    "backgroundColor": [
+                        "rgb(255, 99, 132)",
+                        "rgb(54, 162, 235)",
+                        "rgb(255, 205, 86)"
+                    ]
+                }
+            ]
+        }
+    });
+
+    options4 =  {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+        animation: {
+            onComplete: done4
+        }
+    }
+    var ctx4 = document.getElementById("myChart4").getContext("2d");
+    var myChart4 = new Chart(ctx4, {
+        "type": "bar",
+        options: options4,
+        "data": {
+             "labels": [
+                "Licna zarada",
+                "Samooporezivanje",
+                "Pausal"
+            ],
+            "datasets": [
+                {
+                    "label": "",
+                    "data": [
+                        '@licnaCount',
+                        '@samoCount',
+                        '@pausalCount'
+                    ],
+                    "backgroundColor": [
+                        "rgb(255, 99, 132)",
+                        "rgb(54, 162, 235)",
+                        "rgb(255, 205, 86)"
+                    ]
+                }
+            ]
+        }
+    });
+    //------------------------------------------------/
+    var options5 = {
+        animation: {
+            onComplete: done5
+        }
+    };
+
+    var coloR = [];
+
+    var dynamicColors = function () {
+        var r = Math.floor(Math.random() * 255);
+        var g = Math.floor(Math.random() * 255);
+        var b = Math.floor(Math.random() * 255);
+        return "rgb(" + r + "," + g + "," + b + ")";
+    };
+
+    for (var i in  @values) {
+        coloR.push(dynamicColors());
+    }
+
+    var ctx5 = document.getElementById("myChart5");
+
+    function done6() {
+        var url = myChart6.toBase64Image();
+        document.getElementById("url6").href = url;
+    }
+    var myChart5 = new Chart(ctx5, {
+        "type": "doughnut",
+        options: options5,
+        "data": {
+            "labels": @Html.Raw(codes),
+            "datasets": [
+                {
+                    "label": "",
+                    "data": @values,
+                    backgroundColor: coloR,
+                }
+            ]
+        }
+    });
+
+    options6 =  {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+        animation: {
+            onComplete: done6
+        }
+    }
+
+    function done5() {
+        var url = myChart5.toBase64Image();
+        document.getElementById("url5").href = url;
+    }
+
+    var ctx6 = document.getElementById("myChart6").getContext("2d");
+    var myChart6 = new Chart(ctx6, {
+        "type": "bar",
+        options: options6,
+        "data": {
+              "labels": @Html.Raw(codes),
+            "datasets": [
+                {
+                    "label": "",
+                    "data": @values,
+                    backgroundColor: coloR,
+                }
+            ]
+        }
+    });
+    /**
+     * ******************************************************
+     */
+    var options7 = {
+        animation: {
+            onComplete: done7
+        }
+    };
+    var ctx7 = document.getElementById("myChart7");
+    function done7() {
+        var url = myChart7.toBase64Image();
+        document.getElementById("url7").href = url;
+    }
+
+    var myChart7 = new Chart(ctx7, {
+        "type": "doughnut",
+        options: options7,
+        "data": {
+            "labels": [
+                "Cena DOO",
+                "Cena preduzetnici",
+                "Cena udruzenja"
+            ],
+            "datasets": [
+                {
+                    "label": "",
+                    "data": [
+                        '@Math.Round(dooPrice)',
+                        '@Math.Round(preduzetniciPrice)',
+                        '@Math.Round(udruzenjePrice)'
+                    ],
+                    "backgroundColor": [
+                        "rgb(255, 99, 132)",
+                        "rgb(54, 162, 235)",
+                        "rgb(255, 205, 86)"
+                    ]
+                }
+            ]
+        }
+    });
+
+    options8 =  {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+        animation: {
+            onComplete: done8
+        }
+    }
+
+    function done8() {
+        var url = myChart8.toBase64Image();
+        document.getElementById("url8").href = url;
+    }
+
+    var ctx8 = document.getElementById("myChart8").getContext("2d");
+    var myChart8 = new Chart(ctx8, {
+        "type": "bar",
+        options: options8,
+        "data": {
+            "labels": [
+                "DOO",
+                "Preduzetnici",
+                "Udruzenja"
+            ],
+            "datasets": [
+                {
+                    "label": "",
+                    "data": [
+                        '@Math.Round(dooPrice)',
+                        '@Math.Round(preduzetniciPrice)',
+                        '@Math.Round(udruzenjePrice)'
+                    ],
+                    "backgroundColor": [
+                        "rgb(255, 99, 132)",
+                        "rgb(54, 162, 235)",
+                        "rgb(255, 205, 86)"
+                    ]
+                }
+            ]
+        }
+    });
+
+    /***********************************************************/
+
+    var options9 = {
+        animation: {
+            onComplete: done9
+        }
+    };
+    var ctx9 = document.getElementById("myChart9");
+    function done9() {
+        var url = myChart9.toBase64Image();
+        document.getElementById("url9").href = url;
+    }
+    function done10() {
+        var url = myChart10.toBase64Image();
+        document.getElementById("url10").href = url;
+    }
+    var myChart9 = new Chart(ctx9, {
+        "type": "doughnut",
+        options: options9,
+        "data": {
+            "labels": [
+                "Licna zarada",
+                "Samooporezivanje",
+                "Pausal"
+            ],
+            "datasets": [
+                {
+                    "label": "",
+                    "data": [
+                        '@licnaPrice',
+                        '@samoPrice',
+                        '@pausalPrice'
+                    ],
+                    "backgroundColor": [
+                        "rgb(255, 99, 132)",
+                        "rgb(54, 162, 235)",
+                        "rgb(255, 205, 86)"
+                    ]
+                }
+            ]
+        }
+    });
+
+    options10 =  {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+        animation: {
+            onComplete: done10
+        }
+    }
+    var ctx10 = document.getElementById("myChart10").getContext("2d");
+    var myChart10 = new Chart(ctx10, {
+        "type": "bar",
+        options: options10,
+        "data": {
+             "labels": [
+                "Licna zarada",
+                "Samooporezivanje",
+                "Pausal"
+            ],
+            "datasets": [
+                {
+                    "label": "",
+                    "data": [
+                        '@licnaPrice',
+                        '@samoPrice',
+                        '@pausalPrice'
+                    ],
+                    "backgroundColor": [
+                        "rgb(255, 99, 132)",
+                        "rgb(54, 162, 235)",
+                        "rgb(255, 205, 86)"
+                    ]
+                }
+            ]
+        }
+    });
+</script>

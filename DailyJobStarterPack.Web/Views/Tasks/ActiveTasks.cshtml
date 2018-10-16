@@ -1,0 +1,47 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DataBaseCommunication.DataBaseObjects
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@model IEnumerable<Task>
+
+<div class="row" style="margin-top: 20px;">
+<div class="col-md-1" style="text-align: right">
+    <a href="@Url.Action("Index", "Clients")" class="btn btn-danger"><span class="glyphicon glyphicon-thumbs-down"></span> Odustani</a>
+</div>
+</div>
+<div class="panel-body">
+    <p>Vasi zadaci za danas su:</p>
+
+    <div class="row" style="margin-bottom: 50px; margin-top: 20px;">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table id="mytable" class="table table-bordred table-striped" style="border: 1px solid black; background-color: papayawhip">
+                    <tr>
+                        <th>Naziv zadatka</th>
+                        <th>Datum zavrsetka</th>
+                        <th>Zavrsen</th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var task in Model)
+                    {
+                        <tr>
+                            <td>
+                                <h6 class="task-title">@task.Title</h6>
+                                <p class="task-summary">@task.Description</p>
+                            </td>
+                            <td>@task.TaskDate</td>
+                            <td>@(task.IsDone ? "DA" : "NE")</td>
+                            <td style="text-align:right;">
+                                @if (!task.IsDone)
+                                {
+                                    <a href="@Url.Action("SetDoneStatus", "Tasks", new { taskId = task.Id})">Prebaci u zavrseno</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

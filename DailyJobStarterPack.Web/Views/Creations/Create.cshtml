@@ -1,0 +1,289 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@{
+    var shouldOpenPop = ViewData.ContainsKey("isSuccessful");
+    var isSuccessful = false;
+    if (shouldOpenPop)
+    {
+        isSuccessful = (bool)ViewData["isSuccessful"];
+    }
+}
+<style>
+
+
+</style>
+<div class="row" style="margin-bottom: 50px; margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Novo potencijalno osnivanje</h4>
+                <div class="row">
+                </div>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("Create", "Creations", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Name">Ime</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="Name" name="Name" type="text" class="form-control input-md" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Mail">Mail</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="Mail" name="Mail" type="text" class="form-control input-md">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="PhoneNumber">Telefon</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="PhoneNumber" name="PhoneNumber" type="text" class="form-control input-md">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="PIB">PIB</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="PIB" name="PIB" type="text" class="form-control input-md">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="JobType">Opis posla</label>
+                            <div class="col-md-4">
+                                @foreach (var service in SessionData.Services.Where( x => x.Type == 2 || x.Type == 3))
+                                {
+                                    int i = 0;
+                                    i = i + 1;
+                                    <div class="checkbox">
+                                        <label for="JobType-@service.ServiceId"><input type="checkbox" class="price-checkbox"  data-price="@service.Price" name="JobType" id="JobType-@service.ServiceId" value="@service.ServiceId" @(i == 1 ? "checked" : "")>@service.ServiceName</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Amount">Cena</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="Amount" name="Amount" type="text" class="form-control input-md">
+                                    <input id="AmountCurrency" name="AmountCurrency" type="text" class="form-control input-md" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="ClientType">Vrsta klijenta</label>
+                            <div class="col-md-4">
+                                <label class="radio-inline" for="ClientType-0">
+                                    <input type="radio" name="ClientType" id="ClientType-0" value="@((int)ClientType.DOO)" checked>
+                                    @ResourcesHelper.GetClientType(ClientType.DOO)
+                                </label>
+                                <label class="radio-inline" for="ClientType-1">
+                                    <input type="radio" name="ClientType" id="ClientType-1" value="@((int)ClientType.Preduzetnik)">
+                                    @ResourcesHelper.GetClientType(ClientType.Preduzetnik)
+                                </label>
+                                <label class="radio-inline" for="ClientType-2">
+                                    <input type="radio" name="ClientType" id="ClientType-2" value="@((int)ClientType.Udruzenje)">
+                                    @ResourcesHelper.GetClientType(ClientType.Udruzenje)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="subTypeChooser">
+                            <label class="col-md-4 control-label" for="CompanySubType">Podoblik</label>
+                            <div class="col-md-4">
+                                <label class="radio-inline" for="CompanySubType-0">
+                                    <input type="radio" name="CompanySubType" id="CompanySubType-0" value="Licna zarada" checked>
+                                    Licna zarada
+                                </label>
+                                <label class="radio-inline" for="CompanySubType-1">
+                                    <input type="radio" name="CompanySubType" id="CompanySubType-1" value="Samooporezivanje">
+                                    Samoooprezivanje
+                                </label>
+                                <label class="radio-inline" for="CompanySubType-2">
+                                    <input type="radio" name="CompanySubType" id="CompanySubType-2" value="Pausal">
+                                    Pausal
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="subTypeChooser-doo">
+                            <label class="col-md-4 control-label" for="CompanySubType">Podoblik</label>
+                            <div class="col-md-4">
+                                <label class="radio-inline" for="CompanySubType-DOO-0">
+                                    <input type="radio" name="CompanySubType" id="CompanySubType-DOO-0" value="1V" checked>
+                                    1 Vlasnik
+                                </label>
+                                <label class="radio-inline" for="CompanySubType-DOO-1">
+                                    <input type="radio" name="CompanySubType" id="CompanySubType-DOO-1" value="2V">
+                                    2 Vlasnika
+                                </label>
+                                <label class="radio-inline" for="CompanySubType-DOO-2">
+                                    <input type="radio" name="CompanySubType" id="CompanySubType-DOO-2" value="3V">
+                                    3 Vlasnika
+                                </label>
+                            </div>
+                        </div>
+
+                        <input type="radio" name="PaymentMethod" id="PaymentMethod-0" value="1" checked style="display:none;">
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Note">Napomena</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="Note" name="Note" type="text" class="form-control input-md">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="UserId">Za korisnika</label>
+                            <div class="col-md-4">
+                                @foreach (var user in SessionData.Users)
+                                {
+                                    <label class="radio" for="UserId-@user.Id">
+                                        <input type="radio" name="UserId" id="UserId-@user.Id" value="@user.Id" @(user.Id == SessionData.User.Id ? "checked" : "")>
+                                        @user.FirstName @user.LastName
+                                    </label>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-4" style="text-align: right">
+                                <a href="@Url.Action("Index", "Creations")" class="btn btn-danger"><span class="glyphicon glyphicon-thumbs-down"></span> Odustani</a>
+                            </div>                            <div class="col-md-4" style="text-align: right">
+                                <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up"></span> Dodaj potencijalno osnivanje</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- POP UPUS -->
+@if (shouldOpenPop)
+{
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h2>Dodavanje novog potencijalnog osnivanja</h2>
+            <a class="close" href="@Url.Action("Index", "Creations")">&times;</a>
+            <div class="content">
+                @if (isSuccessful)
+                {
+                    <span>Uspesno ste dodali novo potencijalno osnivanje. Sva potencijalna osnivanja mozete videti u listi potencijalnih osnivanja.</span>
+                }
+                else
+                {
+                    <span>Doslo je do greske prilikom dodavanja novog osnivanja.</span>
+                }
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("Index", "Creations")" data-dismiss="modal" class="btn secondary">U redu</a>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        $("#subTypeChooser").hide();
+        SetPrice();
+        $(".price-checkbox").change(function () {
+            SetPrice();
+        });
+
+        $('input[type=radio][name=ClientType]').change(function () {
+            if (this.value == '2') {
+                $("#subTypeChooser-doo").fadeOut();
+
+                $("#CompanySubType-DOO-0").prop('disabled', true);
+                $("#CompanySubType-DOO-1").prop('disabled', true);
+                $("#CompanySubType-DOO-2").prop('disabled', true);
+
+                $("#CompanySubType-0").prop('disabled', false);
+                $("#CompanySubType-1").prop('disabled', false);
+                $("#CompanySubType-2").prop('disabled', false);
+                
+
+                $("#subTypeChooser").fadeIn();
+            }
+            else if (this.value == '1'){
+                $("#subTypeChooser").fadeOut();
+
+                $("#CompanySubType-DOO-0").prop('disabled', false);
+                $("#CompanySubType-DOO-1").prop('disabled', false);
+                $("#CompanySubType-DOO-2").prop('disabled', false);
+
+                $("#CompanySubType-0").prop('disabled', true);
+                $("#CompanySubType-1").prop('disabled', true);
+                $("#CompanySubType-2").prop('disabled', true);
+
+
+                $("#subTypeChooser-doo").fadeIn();
+
+            }
+            else
+            {
+                $("#subTypeChooser").fadeOut();
+                $("#subTypeChooser-doo").fadeOut();
+            }
+        });
+    });
+
+    function SetPrice() {
+        var totalPrice = 0;
+        $(".price-checkbox").each(function (i, obj) {
+            if ($(obj).is(':checked')) {
+                var price = parseInt($(obj).data("price"));
+                totalPrice += price;
+            }
+        });
+
+        $("#Amount").val(totalPrice);
+        $("#AmountCurrency").val("RSD");
+    }
+
+</script>

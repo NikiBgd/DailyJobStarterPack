@@ -1,0 +1,125 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@{
+    var shouldOpenPop = ViewData.ContainsKey("isSuccessful");
+    var isSuccessful = false;
+    if (shouldOpenPop)
+    {
+        isSuccessful = (bool)ViewData["isSuccessful"];
+    }
+}
+<style>
+
+
+</style>
+<div class="row" style="margin-bottom: 50px; margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Nova usluga</h4>
+                <div class="row">
+                </div>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("CreateNewService", "Settings", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="ServiceName">Naziv usluge</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="ServiceName" name="ServiceName" type="text" class="form-control input-md" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="ServiceDescription">Opis usluge</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user">
+                                        </i>
+                                    </div>
+                                    <input id="ServiceDescription" name="ServiceDescription" type="text" class="form-control input-md" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Price">Cena</label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-birthday-cake">
+                                        </i>
+                                    </div>
+                                    <input id="Price" name="Price" type="text" class="form-control input-md" required>
+                                    <span class="input-group-addon" id="basic-addon2">RSD</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="Type">Vrsta</label>
+                            <div class="col-md-4">
+                                <label class="radio-inline" for="Type-0">
+                                    <input type="radio" name="Type" id="Type-0" value="1" checked>
+                                    Za upite
+                                </label>
+                                <br>
+                                <label class="radio-inline" for="Type-1">
+                                    <input type="radio" name="Type" id="Type-1" value="2">
+                                    Za osnivanje
+                                </label>
+                                <br>
+                                <label class="radio-inline" for="Type-2">
+                                    <input type="radio" name="Type" id="Type-2" value="3">
+                                    Za upite i osnivanje
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label"></label>
+                            <div class="col-md-4" style="text-align: right">
+                                <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up"></span> Dodaj novu uslugu</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- POP UPUS -->
+@if (shouldOpenPop)
+{
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h2>Dodavanje nove usluge</h2>
+            <a class="close" href="@Url.Action("Services", "Settings")">&times;</a>
+            <div class="content">
+                @if (isSuccessful)
+                {
+                    <span>Uspesno ste dodali novu uslugu. Sve usluge mozete videti u listi usluga.</span>
+                }
+                else
+                {
+                    <span>Doslo je do greske prilikom dodavanja nove usluge.</span>
+                }
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("Services", "Settings")" data-dismiss="modal" class="btn secondary">U redu</a>
+            </div>
+        </div>
+    </div>
+}

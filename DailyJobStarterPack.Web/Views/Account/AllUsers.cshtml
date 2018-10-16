@@ -1,0 +1,134 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+@model  List<UserProfile>
+
+<div class="row" style="margin-bottom: 50px; margin-top: 50px;">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table id="mytable" class="table table-bordred table-striped" style="border: 1px solid black;">
+                <tr>
+                    <th>Ime i prezime</th>
+                    <th>Tim - Uloga</th>
+                    <th>Adresa</th>
+                    <th>Email</th>
+                    <th>Telefon</th>
+                    <th>Datum rodjenja</th>
+                    <th>Pol</th>
+                    @if (SessionData.User.Role == Role.Admin)
+                    {
+                        <th>Akcije</th>
+                    }
+                </tr>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.FirstName @user.LastName</td>
+                            <td>@user.Team.TeamName - @user.Role</td>
+                            <td>@user.Address, @user.City</td>
+                            <td>@user.Email</td>
+                            <td>@user.PhoneNumber</td>
+                            <td>@user.BirthDate</td>
+                            <td>
+                                @if (user.Gender == "M")
+                                {
+                                    <span>Muški</span>
+                                }
+                                else if (user.Gender == "F")
+                                {
+                                    <span>Ženski</span>
+                                }
+                            </td>
+                            @if (SessionData.User.Role == Role.Admin)
+                            {
+                                <td>
+                                    <button class="btn btn-danger btn-xs confirm-delete" data-id="@user.Id">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+
+                                    <a class="btn btn-info btn-xs" href="@Url.Action("ChangeUserData", "Account", new { userId = user.Id})">
+                                        <span class="glyphicon glyphicon-heart"></span>
+                                    </a>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<!--POP UPS-->
+<div id="modal-from-dom" class="modal hide overlay">
+    <div class="popup">
+        <div class="modal-header">
+            <a href="#" data-dismiss="modal" class="close">&times;</a>
+            <h3>Brisanje korisnika</h3>
+        </div>
+        <div class="modal-body">
+            <p>Trajno cete obrisati korisnika iz sistema.</p>
+            <p>Da li ste sigurni da zelite da nastavite?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="" class="btn danger">Da</a>
+            <a href="#" data-dismiss="modal" class="btn secondary">Ne</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#modal-from-dom').on('show', function () {
+        var id = $(this).data('id'),
+            removeBtn = $(this).find('.danger');
+
+        removeBtn.attr('href', 'javascript: DeleteUser(' + id + ')');
+    });
+
+    $('.confirm-delete').on('click', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        $('#modal-from-dom').data('id', id).modal('show').trigger('show');
+    });
+
+
+    function DeleteUser(id) {
+         $.ajax({
+           type: "POST",
+           url: "@Url.Action("DeleteUser", "Account")",
+           data: { 'userId': id},
+           dataType: "json",
+           success: function (result) {
+               debugger;
+
+               if (result.isSuccessful)
+               {
+                   $('.modal-body').html('<p>Uspesno ste obrisali korisnika iz sistema.</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+               else
+               {
+                   $('.modal-body').html('<p>' + result.ResponseDescription + '</p>')
+                   $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+               }
+           },
+           error: function(response){
+               $('.modal-body').html('<p>Doslo je do greske prilkom brisanja korisnika iz sistema.</p>')
+               $('.modal-footer').html('<a href="javascript: window.location.reload()" class="btn secondary">U redu</a>');
+           }
+        });
+    }
+</script>
+<style>
+    button {
+        border: 1px #AAA solid;
+        padding: 4px 10px;
+    }
+
+    .hide {
+        display: none;
+    }
+</style>

@@ -1,0 +1,132 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJob.Helpers
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-1"></div>
+    <div class="col-md-10 ">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Pregled trenutnih podesavanja</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-filter">
+                    <thead>
+                        <tr>
+                            <td>
+                                Tip podesavanja
+                            </td>
+                            <td>
+                                Postavljen iznos
+                            </td>
+                            <td>
+                                Parametar ucetvuje u kalkulaciji
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var setting in SessionData.Settings)
+                        {
+                            <tr>
+                                <td>
+                                    @ResourcesHelper.GetSettingName(setting.Type)
+                                </td>
+                                <td>
+                                    @setting.Amount RSD
+                                </td>
+                                <td>
+                                    @(setting.IncludeInCalculation ? "DA" : "NE")
+                                </td>
+                                <td>
+                                    <a href="javascript: ShowPopUp('@setting.Id', '@setting.Amount', '@(setting.IncludeInCalculation.ToString().ToLower())')">Izmeni podesavanja</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--POP UPS-->
+<div id="modal-from-dom-settings" class="modal hide overlay">
+    <div class="popup">
+        @using (Html.BeginForm("Index", "Settings", FormMethod.Post, new { @class = "form-horizontal", id = "settings-form", role = "form" }))
+        {
+            <input type="text" name="Id" id="Id" style="display:none" />
+            <div class="modal-header">
+                <a href="#" data-dismiss="modal" class="close">&times;</a>
+                <h3>Promena podesavanja</h3>
+            </div>
+            <div class="modal-body" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <p>Da li parametar ucestuvje u kalkulaciji</p>
+                    <div class="col-md-12">
+                        <div class="radio-inline">
+                            <label><input type="radio" name="IncludeInCalculation" value="true">DA</label>
+                        </div>
+                        <div class="radio-inline">
+                            <label><input type="radio" name="IncludeInCalculation" value="false">NE</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessageInclude"></div>
+                </div>
+                <div class="form-group">
+                    <p>Iznos parametra</p>
+                    <div class="col-md-12">
+                        <div class="input-group mb-3">
+                            <input type="number" class="form-control" name="Amount" id="Amount">
+                            <span class="input-group-addon">RSD</span>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 1px !important;">
+                    <div class="errorMessageAmount"></div>
+                </div>
+
+            </div>
+            <div style="border-bottom: 1px solid #e5e5e5;text-align:right; ">
+                <button type="submit" class="btn danger">U redu</button>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    function ShowPopUp(id, currentAmount, currentInclude) {
+        debugger;
+        $("#Id").val(id);
+        $("input[name='IncludeInCalculation'][value='" + currentInclude + "']").prop('checked', true);
+        $("input[name='Amount']").val(currentAmount)
+
+        $('#modal-from-dom-settings').modal({
+            backdrop: 'static',
+            keyboard: true,
+            show: true
+        });
+    }
+
+    $("#settings-form").submit(function (e) {
+        $('.errorMessageInclude').html('');
+        $('.errorMessageAmount').html('');
+
+        var reportType = $("input[name='IncludeInCalculation']:checked").val();
+        var amount = $("input[name='Amount']").val()
+
+        if (reportType == undefined || reportType == "") {
+            $('.errorMessageInclude').html('<p style="color: red;">Morate odabrati da li parametar ucestvuje!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+
+        if (amount == undefined || amount == "") {
+            $('.errorMessageAmount').html('<p style="color: red;">Morate uneti iznos!</p>');
+            e.preventDefault(); // here you stop submitting form
+        }
+    });
+</script>

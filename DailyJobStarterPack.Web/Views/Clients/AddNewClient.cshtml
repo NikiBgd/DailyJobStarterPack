@@ -1,0 +1,465 @@
+﻿@using DailyJobStarterPack.DataBaseObjects
+@using DailyJobStarterPack.Web.ViewModels.Security
+
+
+@{
+    var shouldOpenPop = ViewData.ContainsKey("isSuccessful");
+    var isSuccessful = false;
+    if (shouldOpenPop)
+    {
+        isSuccessful = (bool)ViewData["isSuccessful"];
+    }
+
+}
+
+<div class="row" style="margin-bottom: 50px;">
+    <div class="col-md-10 ">
+        @using (Html.BeginForm("AddNewClient", "Clients", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            <fieldset>
+                <br><br />
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Name">Naziv</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Name" name="Name" type="text" class="form-control input-md" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Address">Adresa</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-user">
+                                </i>
+                            </div>
+                            <input id="Address" name="Address" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Place">Mesto</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-user">
+                                </i>
+                            </div>
+                            <input id="Place" name="Place" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Municipality">Opstina</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-birthday-cake">
+                                </i>
+                            </div>
+                            <input id="Municipality" name="Municipality" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="PIB">PIB</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-clock-o">
+                                </i>
+                            </div>
+                            <input id="PIB" name="PIB" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="LegalID">Matični broj</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-database">
+                                </i>
+                            </div>
+                            <input id="LegalID" name="LegalID" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="CreationDate">Datum osnivanja</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-briefcase">
+                                </i>
+                            </div>
+                            <input id="CreationDate" name="CreationDate" type="text" class="form-control input-md">
+                            <script>
+                                $(function () {
+                                    $("#CreationDate").datepicker();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ActivityCode">Šifra delatnosti</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-home" style="font-size: 20px;"></i>
+                            </div>
+                            <input id="ActivityCode" name="ActivityCode" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Activity">Delatnost</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-home" style="font-size: 20px;"></i>
+                            </div>
+                            <input id="Activity" name="Activity" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Form">Oblik</label>
+                    <div class="col-md-4">
+                        <label class="radio-inline" for="Form-0">
+                            <input type="radio" name="Form" id="Form-0" value="DOO">
+                            DOO
+                        </label>
+                        <label class="radio-inline" for="Form-1">
+                            <input type="radio" name="Form" id="Form-1" value="Preduzetnik">
+                            Preduzetnik
+                        </label>
+                        <label class="radio-inline" for="Form-2">
+                            <input type="radio" name="Form" id="Form-2" value="Udruzenje">
+                            Udruzenje
+                        </label>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="FormSubType">Podoblik</label>
+                    <div class="col-md-4">
+                        <label class="radio-inline" for="FormSubType-0">
+                            <input type="radio" name="FormSubType" id="FormSubType-0" value="Licna zarada">
+                            Licna zarada
+                        </label>
+                        <label class="radio-inline" for="FormSubType-1">
+                            <input type="radio" name="FormSubType" id="FormSubType-1" value="Samooporezivanje">
+                            Samoooprezivanje
+                        </label>
+                        <label class="radio-inline" for="FormSubType-2">
+                            <input type="radio" name="FormSubType" id="FormSubType-2" value="Pausal">
+                            Pausal
+                        </label>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="StartDate">Datum početka saradnje</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-briefcase">
+                                </i>
+                            </div>
+                            <input id="StartDate" name="StartDate" type="text" class="form-control input-md">
+                            <script>
+                                $(function () {
+                                    $("#StartDate").datepicker();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ResponsiblePerson">Odgovorno lice</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-home" style="font-size: 20px;"></i>
+                            </div>
+                            <input id="ResponsiblePerson" name="ResponsiblePerson" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ResponsiblePersonPhone">Telefon odgovrnog lica</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <input id="ResponsiblePersonPhone" name="ResponsiblePersonPhone " type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ResponsiblePersonMail">Email odgovornog lica</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="ResponsiblePersonMail" name="ResponsiblePersonMail" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="AdditionalMails">Dodatni mail-ovi</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="AdditionalMails" name="AdditionalMails" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ResponsiblePersonBirthDate">Rođendan odgovornog lica</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="ResponsiblePersonBirthDate" name="ResponsiblePersonBirthDate" type="text" class="form-control input-md">
+                            <script>
+                                $(function () {
+                                    $("#ResponsiblePersonBirthDate").datepicker();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="PDV">PDV</label>
+                    <div class="col-md-4">
+                        <label class="radio-inline" for="PDV-0">
+                            <input type="radio" name="PDV" id="PDV-0" value="mesecni">
+                            Mesecni
+                        </label>
+                        <label class="radio-inline" for="PDV-1">
+                            <input type="radio" name="PDV" id="PDV-1" value="tromesecni">
+                            Tromesecni
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Director">Direktor</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Director" name="Director" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="EmployeesNumber">Broj zaposlenih</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="EmployeesNumber" name="EmployeesNumber" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Account">Računi</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Account" name="Account" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Amount">Iznos</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Amount" name="Amount" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="AmountCode" name="AmountCode" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Slava">Slava</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="Slava" name="Slava" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="BirthDate">Rođendan</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="BirthDate" name="BirthDate" type="text" class="form-control input-md">
+                            <script>
+                                $(function () {
+                                    $("#BirthDate").datepicker();
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="DeliveryMethod">Metod dostave</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <input id="DeliveryMethod" name="DeliveryMethod" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="CourierDay">Dan u nedelju za kurire</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <select id="CourierDay" name="CourierDay" class="form-control">
+                                <option value="1">Ponedeljak</option>
+                                <option value="2">Utorak</option>
+                                <option value="3">Sreda</option>
+                                <option value="4">Cetvrtak</option>
+                                <option value="5">Petak</option>
+                                <option value="6">Subota</option>
+                                <option value="7">Nedelja</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="MainUserId">Knjigovodja</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <select id="MainUserId" name="MainUserId" class="form-control">
+                                @foreach (var user in SessionData.Users)
+                                {
+                                    <option value="@user.Id">@user.FirstName @user.LastName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="SecondUserId">Obračunski radnik</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-envelope-o"></i>
+                            </div>
+                            <select id="SecondUserId" name="SecondUserId" class="form-control">
+                                @foreach (var user in SessionData.Users)
+                                {
+                                    <option value="@user.Id">@user.FirstName @user.LastName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label"></label>
+                    <div class="col-md-4" style="text-align: right">
+                        <a href="@Url.Action("Index", "Clients")" class="btn btn-danger"><span class="glyphicon glyphicon-thumbs-down"></span> Odustani</a>
+                        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up"></span> Dodaj novog klijenta</button>
+                    </div>
+                </div>
+            </fieldset>
+        }
+    </div>
+</div>
+
+<!-- POP UPUS -->
+@if (shouldOpenPop)
+{
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h2>Dodavanje novog klijenta</h2>
+            <a class="close" href="@Url.Action("Index", "Clients")">&times;</a>
+            <div class="content">
+                @if (isSuccessful)
+                {
+                    <span>Uspesno ste dodali novog.</span>
+                }
+                else
+                {
+                    <span>Doslo je do greske prilikom dodavanja novog klijnta</span>
+                }
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("Index", "Clients")" data-dismiss="modal" class="btn secondary">U redu</a>
+            </div>
+        </div>
+    </div>
+}
